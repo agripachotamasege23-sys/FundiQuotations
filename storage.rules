@@ -1,0 +1,52 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'agripachotamasege23@gmail.com'
+      );
+    }
+
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Never expose Admin APK publicly or via client uploads
+    match /apk/admin/{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    // Unpublished Customer APK drafts remain private to admins
+    match /apk/drafts/{versionId}/{fileName} {
+      allow read: if isAdmin();
+      allow write: if isAdmin() &&
+        fileName.matches('^[a-zA-Z0-9._\\-]+\\.apk$') &&
+        request.resource.size > 0 &&
+        request.resource.size <= 157286400;
+    }
+
+    // Published Customer APK files (public read, admin write)
+    match /apk/customer/{versionId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() &&
+        fileName.matches('^[a-zA-Z0-9._\\-]+\\.apk$') &&
+        request.resource.size > 0 &&
+        request.resource.size <= 157286400;
+    }
+
+    // Public media assets (screenshots, guide images, tutorial media)
+    match /media/{folder}/{fileName} {
+      allow read: if folder in ['screenshots', 'guides', 'tutorials'];
+      allow write: if isAdmin() &&
+        folder in ['screenshots', 'guides', 'tutorials'] &&
+        request.resource.size > 0 &&
+        request.resource.size <= 10485760 &&
+        request.resource.contentType.matches('image/.*');
+    }
+  }
+}

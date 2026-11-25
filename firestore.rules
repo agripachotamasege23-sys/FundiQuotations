@@ -1,0 +1,425 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // =========================================================================
+    // Global Primitives & Identity Helpers
+    // =========================================================================
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.email == 'agripachotamasege23@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidTimestamp(val) {
+      return val is timestamp;
+    }
+
+    function isValidUrlOrEmpty(val, maxLen) {
+      return val is string && val.size() <= maxLen && (
+        val.size() == 0 ||
+        val.matches('^https://.*') ||
+        val.matches('^/src/assets/.*') ||
+        val.matches('^/assets/.*')
+      );
+    }
+
+    // =========================================================================
+    // Entity Validation Blueprints
+    // =========================================================================
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'displayName', 'role', 'createdAt']) &&
+        isValidId(data.uid) &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 160 &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+        data.role in ['super_admin', 'admin'] &&
+        isValidTimestamp(data.createdAt);
+    }
+
+    function isValidAppVersion(data) {
+      return data.keys().hasAll([
+          'appName', 'versionName', 'versionCode', 'apkChannel', 'status', 'isLatest',
+          'fileSizeBytes', 'fileSizeDisplay', 'releaseDate', 'minAndroidVersion',
+          'descriptionEn', 'descriptionSw', 'releaseNotesEn', 'releaseNotesSw',
+          'sha256Checksum', 'apkStoragePath', 'apkDownloadUrl', 'createdBy',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'appName', 'versionName', 'versionCode', 'apkChannel', 'status', 'isLatest',
+          'fileSizeBytes', 'fileSizeDisplay', 'releaseDate', 'minAndroidVersion',
+          'descriptionEn', 'descriptionSw', 'releaseNotesEn', 'releaseNotesSw',
+          'sha256Checksum', 'apkStoragePath', 'apkDownloadUrl', 'createdBy',
+          'createdAt', 'updatedAt'
+        ]) &&
+        data.appName is string && data.appName.size() >= 2 && data.appName.size() <= 80 &&
+        data.versionName is string && data.versionName.size() >= 1 && data.versionName.size() <= 40 &&
+        data.versionCode is int && data.versionCode >= 1 && data.versionCode <= 1000000 &&
+        data.apkChannel == 'customer' &&
+        data.status in ['draft', 'published', 'archived'] &&
+        data.isLatest is bool &&
+        data.fileSizeBytes is int && data.fileSizeBytes > 0 && data.fileSizeBytes <= 209715200 &&
+        data.fileSizeDisplay is string && data.fileSizeDisplay.size() >= 2 && data.fileSizeDisplay.size() <= 32 &&
+        data.releaseDate is string && data.releaseDate.size() >= 8 && data.releaseDate.size() <= 32 &&
+        data.minAndroidVersion is string && data.minAndroidVersion.size() >= 2 && data.minAndroidVersion.size() <= 40 &&
+        data.descriptionEn is string && data.descriptionEn.size() >= 5 && data.descriptionEn.size() <= 1500 &&
+        data.descriptionSw is string && data.descriptionSw.size() >= 5 && data.descriptionSw.size() <= 1500 &&
+        data.releaseNotesEn is string && data.releaseNotesEn.size() >= 2 && data.releaseNotesEn.size() <= 3000 &&
+        data.releaseNotesSw is string && data.releaseNotesSw.size() >= 2 && data.releaseNotesSw.size() <= 3000 &&
+        data.sha256Checksum is string && data.sha256Checksum.size() == 64 && data.sha256Checksum.matches('^[a-fA-F0-9]{64}$') &&
+        data.apkStoragePath is string && data.apkStoragePath.size() >= 5 && data.apkStoragePath.size() <= 400 &&
+        data.apkDownloadUrl is string && data.apkDownloadUrl.size() >= 10 && data.apkDownloadUrl.size() <= 1200 &&
+        data.apkDownloadUrl.matches('^https://.*') &&
+        isValidId(data.createdBy) &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidAppScreenshot(data) {
+      return data.keys().hasAll([
+          'titleEn', 'titleSw', 'captionEn', 'captionSw',
+          'imageUrl', 'storagePath', 'sortOrder', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'titleEn', 'titleSw', 'captionEn', 'captionSw',
+          'imageUrl', 'storagePath', 'sortOrder', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.titleEn is string && data.titleEn.size() >= 2 && data.titleEn.size() <= 100 &&
+        data.titleSw is string && data.titleSw.size() >= 2 && data.titleSw.size() <= 100 &&
+        data.captionEn is string && data.captionEn.size() >= 2 && data.captionEn.size() <= 300 &&
+        data.captionSw is string && data.captionSw.size() >= 2 && data.captionSw.size() <= 300 &&
+        data.imageUrl is string && data.imageUrl.size() >= 5 && data.imageUrl.size() <= 1000 &&
+        (
+          data.imageUrl.matches('^https://.*') ||
+          data.imageUrl.matches('^/src/assets/.*') ||
+          data.imageUrl.matches('^/assets/.*')
+        ) &&
+        data.storagePath is string && data.storagePath.size() <= 400 &&
+        data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000 &&
+        data.status in ['draft', 'published'] &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidInstallationGuide(data) {
+      return data.keys().hasAll([
+          'stepNumber', 'titleEn', 'titleSw', 'descriptionEn', 'descriptionSw',
+          'tipEn', 'tipSw', 'imageUrl', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'stepNumber', 'titleEn', 'titleSw', 'descriptionEn', 'descriptionSw',
+          'tipEn', 'tipSw', 'imageUrl', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.stepNumber is int && data.stepNumber >= 1 && data.stepNumber <= 50 &&
+        data.titleEn is string && data.titleEn.size() >= 2 && data.titleEn.size() <= 120 &&
+        data.titleSw is string && data.titleSw.size() >= 2 && data.titleSw.size() <= 120 &&
+        data.descriptionEn is string && data.descriptionEn.size() >= 5 && data.descriptionEn.size() <= 1000 &&
+        data.descriptionSw is string && data.descriptionSw.size() >= 5 && data.descriptionSw.size() <= 1000 &&
+        data.tipEn is string && data.tipEn.size() <= 400 &&
+        data.tipSw is string && data.tipSw.size() <= 400 &&
+        isValidUrlOrEmpty(data.imageUrl, 1000) &&
+        data.status in ['draft', 'published'] &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidTutorial(data) {
+      return data.keys().hasAll([
+          'slug', 'category', 'sortOrder', 'titleEn', 'titleSw',
+          'summaryEn', 'summarySw', 'contentEn', 'contentSw',
+          'imageUrl', 'videoUrl', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'slug', 'category', 'sortOrder', 'titleEn', 'titleSw',
+          'summaryEn', 'summarySw', 'contentEn', 'contentSw',
+          'imageUrl', 'videoUrl', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.slug is string && data.slug.size() >= 2 && data.slug.size() <= 80 && data.slug.matches('^[a-z0-9\\-]+$') &&
+        data.category is string && data.category.size() >= 2 && data.category.size() <= 60 &&
+        data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000 &&
+        data.titleEn is string && data.titleEn.size() >= 2 && data.titleEn.size() <= 140 &&
+        data.titleSw is string && data.titleSw.size() >= 2 && data.titleSw.size() <= 140 &&
+        data.summaryEn is string && data.summaryEn.size() >= 5 && data.summaryEn.size() <= 400 &&
+        data.summarySw is string && data.summarySw.size() >= 5 && data.summarySw.size() <= 400 &&
+        data.contentEn is string && data.contentEn.size() >= 10 && data.contentEn.size() <= 4000 &&
+        data.contentSw is string && data.contentSw.size() >= 10 && data.contentSw.size() <= 4000 &&
+        isValidUrlOrEmpty(data.imageUrl, 1000) &&
+        isValidUrlOrEmpty(data.videoUrl, 1000) &&
+        data.status in ['draft', 'published'] &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidFaq(data) {
+      return data.keys().hasAll([
+          'category', 'sortOrder', 'questionEn', 'questionSw',
+          'answerEn', 'answerSw', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'category', 'sortOrder', 'questionEn', 'questionSw',
+          'answerEn', 'answerSw', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        data.category is string && data.category.size() >= 2 && data.category.size() <= 60 &&
+        data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000 &&
+        data.questionEn is string && data.questionEn.size() >= 5 && data.questionEn.size() <= 250 &&
+        data.questionSw is string && data.questionSw.size() >= 5 && data.questionSw.size() <= 250 &&
+        data.answerEn is string && data.answerEn.size() >= 5 && data.answerEn.size() <= 2000 &&
+        data.answerSw is string && data.answerSw.size() >= 5 && data.answerSw.size() <= 2000 &&
+        data.status in ['draft', 'published'] &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidWebsiteSettings(data) {
+      return data.keys().hasAll([
+          'brandName', 'supportEmail', 'supportPhone', 'whatsappNumber',
+          'officeAddressEn', 'officeAddressSw', 'heroHeadlineEn', 'heroHeadlineSw',
+          'heroSubheadlineEn', 'heroSubheadlineSw', 'showDownloadCounter',
+          'updatedBy', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'brandName', 'supportEmail', 'supportPhone', 'whatsappNumber',
+          'officeAddressEn', 'officeAddressSw', 'heroHeadlineEn', 'heroHeadlineSw',
+          'heroSubheadlineEn', 'heroSubheadlineSw', 'showDownloadCounter',
+          'updatedBy', 'updatedAt'
+        ]) &&
+        data.brandName is string && data.brandName.size() >= 2 && data.brandName.size() <= 60 &&
+        data.supportEmail is string && data.supportEmail.size() >= 5 && data.supportEmail.size() <= 120 &&
+        data.supportPhone is string && data.supportPhone.size() >= 5 && data.supportPhone.size() <= 40 &&
+        data.whatsappNumber is string && data.whatsappNumber.size() >= 5 && data.whatsappNumber.size() <= 40 &&
+        data.officeAddressEn is string && data.officeAddressEn.size() >= 3 && data.officeAddressEn.size() <= 200 &&
+        data.officeAddressSw is string && data.officeAddressSw.size() >= 3 && data.officeAddressSw.size() <= 200 &&
+        data.heroHeadlineEn is string && data.heroHeadlineEn.size() >= 5 && data.heroHeadlineEn.size() <= 160 &&
+        data.heroHeadlineSw is string && data.heroHeadlineSw.size() >= 5 && data.heroHeadlineSw.size() <= 160 &&
+        data.heroSubheadlineEn is string && data.heroSubheadlineEn.size() >= 5 && data.heroSubheadlineEn.size() <= 400 &&
+        data.heroSubheadlineSw is string && data.heroSubheadlineSw.size() >= 5 && data.heroSubheadlineSw.size() <= 400 &&
+        data.showDownloadCounter is bool &&
+        isValidId(data.updatedBy) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidSupportMessage(data) {
+      return data.keys().hasAll([
+          'customerName', 'email', 'subject', 'message',
+          'language', 'status', 'adminNotes', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'customerName', 'email', 'subject', 'message',
+          'language', 'status', 'adminNotes', 'createdAt', 'updatedAt'
+        ]) &&
+        data.customerName is string && data.customerName.size() >= 2 && data.customerName.size() <= 100 &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 160 &&
+        data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$') &&
+        data.subject is string && data.subject.size() >= 2 && data.subject.size() <= 160 &&
+        data.message is string && data.message.size() >= 10 && data.message.size() <= 3000 &&
+        data.language in ['en', 'sw'] &&
+        data.status in ['new', 'in_progress', 'resolved'] &&
+        data.adminNotes is string && data.adminNotes.size() <= 1000 &&
+        isValidTimestamp(data.createdAt) &&
+        isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidDownloadStat(data) {
+      return data.keys().hasAll([
+          'versionId', 'versionName', 'apkChannel', 'sourcePage', 'language', 'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'versionId', 'versionName', 'apkChannel', 'sourcePage', 'language', 'createdAt'
+        ]) &&
+        isValidId(data.versionId) &&
+        data.versionName is string && data.versionName.size() >= 1 && data.versionName.size() <= 40 &&
+        data.apkChannel == 'customer' &&
+        data.sourcePage is string && data.sourcePage.size() >= 1 && data.sourcePage.size() <= 60 &&
+        data.language in ['en', 'sw'] &&
+        isValidTimestamp(data.createdAt);
+    }
+
+    // =========================================================================
+    // Collection Rules
+    // =========================================================================
+
+    match /admins/{adminId} {
+      allow get: if isValidId(adminId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(adminId) && isAdmin() && isValidAdminUser(incoming()) &&
+        incoming().uid == adminId && incoming().createdAt == request.time;
+      allow update: if isValidId(adminId) && isAdmin() && isValidAdminUser(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['email', 'displayName', 'role']);
+      allow delete: if isValidId(adminId) && isAdmin();
+    }
+
+    match /appVersions/{versionId} {
+      allow get: if isValidId(versionId) && (
+        (existing().status == 'published' && existing().apkChannel == 'customer') ||
+        isAdmin()
+      );
+      allow list: if (
+        (resource.data.status == 'published' && resource.data.apkChannel == 'customer') ||
+        isAdmin()
+      );
+      allow create: if isValidId(versionId) && isAdmin() && isValidAppVersion(incoming()) &&
+        incoming().createdBy == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(versionId) && isAdmin() && isValidAppVersion(incoming()) &&
+        incoming().createdBy == existing().createdBy &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'appName', 'versionName', 'versionCode', 'status', 'isLatest',
+          'fileSizeBytes', 'fileSizeDisplay', 'releaseDate', 'minAndroidVersion',
+          'descriptionEn', 'descriptionSw', 'releaseNotesEn', 'releaseNotesSw',
+          'sha256Checksum', 'apkStoragePath', 'apkDownloadUrl', 'updatedAt'
+        ]);
+      allow delete: if isValidId(versionId) && isAdmin();
+    }
+
+    match /appScreenshots/{screenshotId} {
+      allow get: if isValidId(screenshotId) && (existing().status == 'published' || isAdmin());
+      allow list: if resource.data.status == 'published' || isAdmin();
+      allow create: if isValidId(screenshotId) && isAdmin() && isValidAppScreenshot(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(screenshotId) && isAdmin() && isValidAppScreenshot(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'titleEn', 'titleSw', 'captionEn', 'captionSw',
+          'imageUrl', 'storagePath', 'sortOrder', 'status', 'updatedAt'
+        ]);
+      allow delete: if isValidId(screenshotId) && isAdmin();
+    }
+
+    match /installationGuides/{guideId} {
+      allow get: if isValidId(guideId) && (existing().status == 'published' || isAdmin());
+      allow list: if resource.data.status == 'published' || isAdmin();
+      allow create: if isValidId(guideId) && isAdmin() && isValidInstallationGuide(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(guideId) && isAdmin() && isValidInstallationGuide(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'stepNumber', 'titleEn', 'titleSw', 'descriptionEn', 'descriptionSw',
+          'tipEn', 'tipSw', 'imageUrl', 'status', 'updatedAt'
+        ]);
+      allow delete: if isValidId(guideId) && isAdmin();
+    }
+
+    match /tutorials/{tutorialId} {
+      allow get: if isValidId(tutorialId) && (existing().status == 'published' || isAdmin());
+      allow list: if resource.data.status == 'published' || isAdmin();
+      allow create: if isValidId(tutorialId) && isAdmin() && isValidTutorial(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(tutorialId) && isAdmin() && isValidTutorial(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'slug', 'category', 'sortOrder', 'titleEn', 'titleSw',
+          'summaryEn', 'summarySw', 'contentEn', 'contentSw',
+          'imageUrl', 'videoUrl', 'status', 'updatedAt'
+        ]);
+      allow delete: if isValidId(tutorialId) && isAdmin();
+    }
+
+    match /faqs/{faqId} {
+      allow get: if isValidId(faqId) && (existing().status == 'published' || isAdmin());
+      allow list: if resource.data.status == 'published' || isAdmin();
+      allow create: if isValidId(faqId) && isAdmin() && isValidFaq(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(faqId) && isAdmin() && isValidFaq(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'category', 'sortOrder', 'questionEn', 'questionSw',
+          'answerEn', 'answerSw', 'status', 'updatedAt'
+        ]);
+      allow delete: if isValidId(faqId) && isAdmin();
+    }
+
+    match /websiteSettings/{settingId} {
+      allow get: if isValidId(settingId) && (settingId == 'global' || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(settingId) && settingId == 'global' && isAdmin() &&
+        isValidWebsiteSettings(incoming()) &&
+        incoming().updatedBy == request.auth.uid &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(settingId) && settingId == 'global' && isAdmin() &&
+        isValidWebsiteSettings(incoming()) &&
+        incoming().updatedBy == request.auth.uid &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'brandName', 'supportEmail', 'supportPhone', 'whatsappNumber',
+          'officeAddressEn', 'officeAddressSw', 'heroHeadlineEn', 'heroHeadlineSw',
+          'heroSubheadlineEn', 'heroSubheadlineSw', 'showDownloadCounter',
+          'updatedBy', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    match /supportMessages/{messageId} {
+      allow get: if isValidId(messageId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(messageId) &&
+        isValidSupportMessage(incoming()) &&
+        incoming().status == 'new' &&
+        incoming().adminNotes == '' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(messageId) && isAdmin() &&
+        isValidSupportMessage(incoming()) &&
+        incoming().customerName == existing().customerName &&
+        incoming().email == existing().email &&
+        incoming().subject == existing().subject &&
+        incoming().message == existing().message &&
+        incoming().language == existing().language &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'adminNotes', 'updatedAt']);
+      allow delete: if isValidId(messageId) && isAdmin();
+    }
+
+    match /downloadStatistics/{statId} {
+      allow get: if isValidId(statId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(statId) &&
+        isValidDownloadStat(incoming()) &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/appVersions/$(incoming().versionId)) &&
+        get(/databases/$(database)/documents/appVersions/$(incoming().versionId)).data.status == 'published' &&
+        get(/databases/$(database)/documents/appVersions/$(incoming().versionId)).data.apkChannel == 'customer';
+      allow update: if false;
+      allow delete: if isValidId(statId) && isAdmin();
+    }
+  }
+}

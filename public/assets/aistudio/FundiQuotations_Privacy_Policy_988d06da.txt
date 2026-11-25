@@ -1,0 +1,197 @@
+FundiQuotations – Privacy Policy
+
+Effective Date: October 26, 2026
+Developer: Agritech Electrical Solutions
+Contact Email: support.fundiquotations@gmail.com
+
+Contents
+1. Introduction
+2. Summary
+3. Information We Collect
+4. How We Use Information
+5. Legal Basis and Consent
+6. Where Your Data Is Stored
+7. Sharing and Disclosure
+8. Payments
+9. App Permissions and Web Technologies
+10. Data Security
+11. Data Retention and Deletion
+12. Your Rights and Choices
+13. Children's Privacy
+14. International Data Transfers
+15. Changes to This Policy
+16. Contact Information
+
+1. Introduction
+
+FundiQuotations (the “Service”, “we”, “us”, or “our”) is a business platform developed and operated by Agritech Electrical Solutions. The Service includes both the web application and the mobile application (Android).
+
+FundiQuotations helps electricians, plumbers, contractors, and other service providers prepare quotations and invoices, manage customers, materials, labour costs, and keep business records.
+
+This Privacy Policy explains what information we collect, how we use and protect it, with whom it may be shared, and the choices available to you. By creating an account or using the Service, you confirm that you have read and understood this Policy. If you do not agree with it, please do not use the Service.
+
+2. Summary
+
+FundiQuotations processes information necessary to provide quotation, invoice, customer, inventory, account, and licensing features. The main categories of information are:
+
+- Account information — email address, sign-in method, account ID, and phone number (if verified by SMS). Used to create and secure your account via Google Firebase Authentication.
+- Business profile — business name, address, contact details, TIN, logo, signature, and payment details you choose to include on documents.
+- Customer and business records — customer details, quotations, invoices, materials, prices, labour charges, inventory, and notes that you enter.
+- Payment information — selected plan, payment reference, amount, and status. Payments are processed by Google Play or the relevant payment provider. We do not receive your mobile-money PIN, card number, or security codes.
+- Technical and license information — installation ID, license status, usage limits, device/browser information, and security signals processed by Google services.
+
+Most mobile features work offline. Depending on the features you use, account, license, or business information may be processed by Google Firebase or a payment provider.
+
+We do not sell personal information, display advertising in the Service, or use information for advertising or cross-app tracking.
+
+3. Information We Collect
+
+3.1 Information You Provide
+- Account information: email address and password (passwords are handled by Firebase Authentication and are not stored by us in readable form), Google account details (if you sign in with Google), or phone number (if verified by SMS).
+- Business profile: business name, address, contact numbers, TIN, logo, signature, and bank or mobile-money details you choose to display on documents.
+- Customer and business records: customers, quotations, invoices, materials and prices, labour charges, inventory, and notes.
+- Files you upload or select: images (logo or signature) or other files you choose.
+- Support communications: any information you send when contacting us for assistance.
+
+3.2 Information About Other People (Your Customers)
+When you enter details about your customers, you decide what information is stored. We process that information only to provide the Service’s features to you. You are responsible for having the legal right to collect and use such information and for using it lawfully.
+
+3.3 Payment Information
+When you purchase a plan, we receive the plan selected and the payment result (reference, amount, and status). For mobile-money payments, we use the phone number and wallet you provide to request payment from the provider. We do not receive or store your mobile-money PIN, card number, card security code, or bank login credentials.
+
+3.4 Information Collected Automatically
+- Mobile App: installation ID, license status and expiry, free quotation usage, device type, app version, and App Check signals.
+- Web App: IP address, browser type and version, device type, pages visited, and similar technical data necessary to operate and secure the website.
+- Preferences such as language and theme.
+
+3.5 Information We Do Not Collect
+- Precise or approximate location (GPS). Any “location” field is free text entered by you.
+- Contact list, camera, microphone, photos, or SMS content.
+- Fingerprint or face data (biometric unlock is handled by the device; the app only receives a yes/no result).
+- Advertising identifiers or any data used for advertising or tracking purposes.
+
+4. How We Use Information
+
+We use the information we collect to:
+- Create and manage your account and authenticate you
+- Prepare, store, print, and export quotations and invoices
+- Calculate material costs, labour charges, and totals
+- Manage customer, material, and inventory records
+- Provide backup and restore functionality
+- Process payments, activate plans, and manage licenses
+- Maintain security, prevent fraud and misuse, and improve reliability
+- Provide customer support
+- Comply with legal obligations
+
+5. Legal Basis and Consent
+
+We process your information:
+- To provide the Service you requested
+- With your consent where required (for example, SMS verification or biometric unlock)
+- For our legitimate interests in security, fraud prevention, and accurate license and payment records
+- To comply with applicable legal obligations
+
+6. Where Your Data Is Stored
+
+- On your device (Mobile): Most records are stored in a local database. The mobile app works offline for the majority of features.
+- In the cloud: Account details, license information, and business records may be synchronised or backed up to Google Firebase (Cloud Firestore) and linked to your account. Security rules restrict access to your own signed-in account only.
+- Web App: Data is processed and stored on secure servers operated by our service providers.
+
+Authorised administrators may access account and license information when necessary to provide support, manage licenses, or protect the Service.
+
+Automatic Android backup is disabled for the mobile app. Uninstalling the app or clearing its data removes local records unless you have previously backed them up to the cloud or exported them.
+
+Files you export, save, or share (for example PDFs or backup files) are outside our control once they leave the Service.
+
+7. Sharing and Disclosure
+
+We do not sell or rent your personal information. We share information only in the following circumstances:
+
+- Service providers: Google (Firebase Authentication, Cloud Firestore, Cloud Functions, App Check, Google Sign-In, and Google Play Billing) and the payment provider that processes mobile-money, card, or bank payments. These providers process information solely to deliver their services under their own privacy terms.
+- Legal and safety requirements: When required by law or a valid legal request, or to protect the rights, safety, and security of users, the public, or the Service, and to prevent fraud.
+- Business transfers: If the Service or business is transferred to another owner, your information may be transferred under equivalent protections.
+- At your direction: When you share a quotation or invoice (for example via PDF or messaging apps), the recipient receives only what you choose to send.
+
+Relevant third-party policies:
+- Google Privacy Policy: https://policies.google.com/privacy
+- Firebase Privacy: https://firebase.google.com/support/privacy
+- Google Play Terms of Service: https://play.google.com/about/play-terms/
+
+8. Payments
+
+Plans may be paid through Google Play, mobile money, or card/bank payment pages provided by our payment provider. Our systems confirm the payment with the relevant provider and then activate your plan. Prices are controlled on our server.
+
+Payments made through Google Play are subject to Google Play’s terms and refund policies. We retain a record of your plan, payment reference, amount, and status.
+
+9. App Permissions and Web Technologies
+
+Mobile App Permissions:
+- Internet and network state — required for sign-in, synchronisation, backup, and payments
+- Biometric — only if you enable fingerprint or face unlock
+- Storage (Android 9 and older) — to save PDF files
+- Google Play Billing — to purchase plans
+
+The mobile app does not request location, camera, microphone, contacts, or SMS permissions.
+
+Web App:
+We may use essential cookies and similar technologies necessary for authentication, security, and basic functionality. We do not use advertising or tracking cookies.
+
+10. Data Security
+
+We implement appropriate technical and organisational measures, including:
+- Encrypted connections (HTTPS/TLS)
+- Access controls limiting cloud records to the account owner
+- Server-side verification of payments
+- Encryption of biometric credentials using the Android Keystore (mobile)
+- Protection of local data within the Android application sandbox
+
+No system is completely secure. Please protect your devices with a screen lock, keep your password confidential, and keep your software up to date.
+
+11. Data Retention and Deletion
+
+We retain your information while your account remains active and for as long as necessary to provide the Service.
+
+How to delete your data:
+- In the mobile app: Go to Settings → Delete Account, enter your password, and confirm. This permanently deletes your account, customers, quotations, invoices, materials, business profile, and cloud backups.
+- By email: Send a request to support.fundiquotations@gmail.com. We aim to complete verified deletion requests within 30 days.
+
+Uninstalling the mobile app does not delete your cloud data. You must use the Delete Account function or contact us if you want the data removed.
+
+Information that may be retained after deletion:
+- Payment and license records required for accounting, tax, dispute resolution, and fraud prevention
+- Purchase records held by Google Play
+- Files you previously exported or shared
+- Short-lived system logs or backups maintained by service providers until overwritten
+
+12. Your Rights and Choices
+
+Under applicable data protection laws, including Tanzania’s Personal Data Protection Act, 2022, you may have the right to:
+- Access, correct, or delete your personal information
+- Receive a copy of your data
+- Withdraw consent
+- Object to or restrict certain processing
+
+You can correct most information directly in the Service, export your records using the backup and PDF features, disable biometric unlock, and delete your account. For any other requests, please contact us using the details in Section 16. You also have the right to lodge a complaint with the relevant data protection authority.
+
+13. Children's Privacy
+
+FundiQuotations is a business tool intended for technicians and business users. It is not directed at children and is not intended for anyone under the age of 18. We do not knowingly collect personal information from children. If you believe a child has provided us with information, please contact us and we will delete it.
+
+14. International Data Transfers
+
+Google’s servers that provide Firebase and Google Play services may be located outside Tanzania. By using the Service, you acknowledge that your information may be processed in other countries under the safeguards and terms of these providers.
+
+15. Changes to This Policy
+
+We may update this Privacy Policy from time to time. The updated version will show a new effective date and will be made available in the Service and on our website. If a change is material, we will provide notice within the Service. Your continued use of the Service after the effective date of the updated Policy constitutes acceptance of the changes.
+
+16. Contact Information
+
+For privacy-related questions, data requests, or account deletion, please contact:
+
+Application: FundiQuotations
+Developer / Business: Agritech Electrical Solutions
+Contact Person: Agripa Edward Chotamasege
+Email: support.fundiquotations@gmail.com
+
+By using FundiQuotations, you acknowledge that you have read and understood this Privacy Policy.

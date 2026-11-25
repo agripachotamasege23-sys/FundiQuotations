@@ -1,0 +1,152 @@
+FundiQuotations – Terms & Conditions
+
+Effective Date: October 26, 2026
+Developer: Agritech Electrical Solutions
+Contact Email: support.fundiquotations@gmail.com
+
+1. Acceptance of Terms
+
+Welcome to FundiQuotations. These Terms & Conditions (“Terms”) govern your access to and use of the FundiQuotations platform, which includes the web application and the mobile application (Android APK) (collectively referred to as the “Service” or “Application”).
+
+By creating an account, accessing, or using the Service in any way, you agree to be bound by these Terms. If you do not agree to these Terms, you must not access or use the Service.
+
+2. About FundiQuotations
+
+FundiQuotations is a business tool designed to help electricians, plumbers, contractors, and other service providers create quotations, generate invoices, manage customer information, organize material costs, and calculate labor charges.
+
+The Service is intended solely as a business administration and productivity tool. It does not replace your professional judgment, technical expertise, or legal responsibility for the work you perform or the documents you issue.
+
+3. User Accounts
+
+You are responsible for providing accurate, complete, and up-to-date information when creating and maintaining your account.
+
+You are solely responsible for safeguarding your login credentials and for all activities that occur under your account. You must not share your password or other confidential account information with any unauthorized person.
+
+If you suspect any unauthorized access to your account, you must notify us immediately at support.fundiquotations@gmail.com.
+
+You must not use another person’s account without permission or provide false information in order to gain unauthorized access to the Service.
+
+4. Quotations and Invoices
+
+FundiQuotations provides tools to assist you in preparing quotations and invoices. You remain fully responsible for reviewing and verifying all information before sharing, printing, sending, or issuing any document to a customer.
+
+This includes, but is not limited to:
+- Customer names and contact details
+- Material descriptions, quantities, units, and prices
+- Labor charges, taxes (where applicable), discounts, and totals
+- Payment terms, due dates, and other commercial conditions
+
+You are solely responsible for ensuring that any quotation or invoice accurately reflects the agreement between you and your customer.
+
+FundiQuotations does not guarantee that every calculated amount will be correct in every situation. You must always carefully review the final figures before issuing any document.
+
+5. Material Prices and Calculations
+
+Material prices may vary depending on supplier, location, availability, and time. Any prices entered into or displayed by the Service are provided for convenience only and must be independently verified by you before use.
+
+You are solely responsible for confirming current prices, quantities, labor rates, taxes, and the final amount payable by your customer.
+
+Agritech Electrical Solutions shall not be liable for any losses arising from outdated prices, incorrect data entry, or calculations that were not properly reviewed by the user.
+
+6. Customer Information
+
+You must have a legitimate reason and any legally required consent or authorization before collecting, storing, or processing customer information within the Service.
+
+You agree to use customer information responsibly, protect it against unauthorized access, and comply with all applicable data protection and privacy laws.
+
+You must not use FundiQuotations to collect, store, or share any person’s information in an unlawful manner.
+
+7. Plans, Trials, and Payments
+
+Certain features or continued use of the Service may be subject to trial periods, subscription plans, or other usage limitations as displayed within the Application.
+
+Where a trial or paid plan is offered, its duration, limits, pricing, and conditions will be clearly communicated through the Application or the applicable purchase process.
+
+You are responsible for reviewing all plan details before making any purchase. Prices and features may be changed from time to time, subject to applicable law and the terms presented at the time of purchase.
+
+Where payments are processed by a third-party payment provider, that provider’s terms and conditions shall also apply.
+
+8. Acceptable Use
+
+You agree not to:
+
+- Use the Service for any unlawful, fraudulent, or deceptive purpose
+- Attempt to gain unauthorized access to the Service, its systems, or another user’s account
+- Interfere with or disrupt the security, integrity, or proper functioning of the Service
+- Copy, modify, reverse-engineer, distribute, or commercially exploit the Service without authorization
+- Use the Service to create fraudulent quotations, invoices, or business records
+
+We reserve the right to suspend or restrict access where we reasonably believe these Terms have been violated, subject to applicable law.
+
+9. Data Storage, Backup, and Loss
+
+Your ability to access information stored in the Service may depend on your device, internet connection, application version, account status, and available backup options.
+
+You are solely responsible for making and securely retaining backups of important business records.
+
+Do not assume that uninstalling the application, changing devices, reinstalling the application, or signing out will automatically preserve or restore all of your data.
+
+While we take reasonable steps to maintain the Service, we cannot guarantee that data will never be lost, corrupted, or become inaccessible. Nothing in these Terms excludes any liability that cannot be excluded under applicable law.
+
+10. Intellectual Property
+
+The FundiQuotations name, branding, design, software, and all related materials are owned by or licensed to Agritech Electrical Solutions.
+
+You are granted a limited, non-exclusive, non-transferable right to use the Service for its intended business purposes only. You may not copy, resell, redistribute, or commercially exploit the Service or any of its protected elements without prior written authorization.
+
+You retain full ownership of and responsibility for the business content and documents you create using the Service.
+
+11. Availability and Updates
+
+We may update, improve, modify, suspend, or discontinue certain features of the Service at any time in order to improve performance, enhance security, or support ongoing development.
+
+We do not guarantee uninterrupted or error-free operation of the Service on every device or under all network conditions. Some features may require an active internet connection.
+
+12. Account Suspension and Termination
+
+We may suspend, restrict, or terminate an account where necessary to protect users, prevent fraud or abuse, address security risks, or comply with legal obligations.
+
+You may stop using the Service at any time. If you wish to delete your account and associated data, please follow the account deletion instructions within the Application or visit the FundiQuotations Account Deletion page.
+
+Account deletion and data retention are governed by the applicable Privacy Policy and relevant legal requirements.
+
+13. Third-Party Services
+
+The Service may rely on third-party providers for functions such as authentication, hosting, cloud storage, or payment processing.
+
+The availability of such functions depends on the relevant third-party provider. Your use of any third-party service may also be subject to that provider’s own terms and privacy policy.
+
+14. Disclaimer
+
+The Service is provided on an “as is” and “as available” basis as a business assistance tool. To the maximum extent permitted by applicable law, we do not warrant that the Service will be error-free, continuously available, or suitable for every user’s specific business requirements.
+
+You remain fully responsible for all professional decisions, technical work, safety practices, customer agreements, pricing, and compliance with applicable laws and regulations.
+
+15. Limitation of Liability
+
+To the maximum extent permitted by applicable law, Agritech Electrical Solutions shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of, or inability to use, the Service.
+
+Nothing in these Terms excludes or limits any liability that cannot be excluded or limited under the laws of the United Republic of Tanzania.
+
+16. Changes to These Terms
+
+We may revise these Terms from time to time. The updated version will be published on the FundiQuotations website or within the Application, together with a revised effective date.
+
+Your continued use of the Service after the updated Terms become effective constitutes your acceptance of the revised Terms, to the extent permitted by applicable law. If you do not agree to any material change, you should discontinue use of the Service.
+
+17. Governing Law
+
+These Terms shall be governed by and construed in accordance with the laws of the United Republic of Tanzania, without prejudice to any mandatory consumer protection or other legal rights that may apply to you.
+
+Any dispute arising out of or in connection with these Terms shall be resolved through the appropriate legal processes under applicable Tanzanian law.
+
+18. Contact Us
+
+If you have any questions regarding these Terms & Conditions, please contact us at:
+
+Agritech Electrical Solutions
+Email: support.fundiquotations@gmail.com
+
+19. Related Policies
+
+Please also review the FundiQuotations Privacy Policy to understand how we handle personal information, and the Account Deletion page for instructions on how to request deletion of your account and associated data.

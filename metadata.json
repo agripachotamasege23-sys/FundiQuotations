@@ -1,0 +1,8 @@
+{
+  "name": "FundiQuotations Web Portal",
+  "description": "Official bilingual web portal and Customer APK distribution hub for FundiQuotations — the mobile quotation, invoicing, materials, and offline business app for contractors and artisans.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

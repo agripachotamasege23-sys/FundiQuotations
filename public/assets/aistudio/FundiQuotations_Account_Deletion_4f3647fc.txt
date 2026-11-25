@@ -1,0 +1,52 @@
+FundiQuotations – Account Deletion Request
+
+App Name: FundiQuotations
+Developer: Agritech Electrical Solutions
+
+How to Request Account Deletion
+
+If you wish to permanently delete your FundiQuotations account and the associated data, you may request deletion using either of the methods below:
+
+Option 1: From the Mobile App
+Open the FundiQuotations app, go to Settings, select Delete Account, and follow the on-screen instructions.
+
+Option 2: By Email
+Send an email to support.fundiquotations@gmail.com with the subject line:
+
+FundiQuotations Account Deletion Request
+
+In your email, please include:
+- Your registered account email address or phone number
+- A clear statement that you want to delete your FundiQuotations account
+
+Do not include your password, PIN, or any sensitive login credentials in the email.
+
+What Happens After You Request Deletion?
+
+After receiving your request, we may contact you to verify that you are the owner of the account.
+
+Once the request is verified, we will proceed with the deletion of your account and associated personal data, subject to applicable legal requirements.
+
+We aim to complete verified deletion requests within 30 days.
+
+Information That May Be Retained
+
+Certain information may need to be retained where required by law or for legitimate business purposes, such as:
+- Accounting and tax records
+- Resolving disputes
+- Preventing fraud or abuse
+
+Any retained information will be handled in accordance with our Privacy Policy and applicable laws.
+
+Important Notice
+
+Uninstalling the FundiQuotations mobile app does not automatically delete your account or the data stored in the cloud. To permanently remove your account and associated data, you must submit a deletion request using one of the methods above.
+
+Contact Us
+
+If you have any questions about account deletion, please contact:
+
+Agritech Electrical Solutions
+Email: support.fundiquotations@gmail.com
+
+For more information about how we collect, use, and protect your personal information, please read our FundiQuotations Privacy Policy.

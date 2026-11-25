@@ -1,0 +1,246 @@
+{
+  "entities": {
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized administrator account permitted to manage FundiQuotations portal content and Customer APK releases.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "minLength": 5, "maxLength": 160 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "role": { "type": "string", "enum": ["super_admin", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt"]
+    },
+    "AppVersion": {
+      "title": "AppVersion",
+      "description": "Customer Android APK release metadata. Strictly restricted to the customer APK channel.",
+      "type": "object",
+      "properties": {
+        "appName": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "versionName": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "versionCode": { "type": "integer" },
+        "apkChannel": { "type": "string", "enum": ["customer"] },
+        "status": { "type": "string", "enum": ["draft", "published", "archived"] },
+        "isLatest": { "type": "boolean" },
+        "fileSizeBytes": { "type": "integer" },
+        "fileSizeDisplay": { "type": "string", "minLength": 2, "maxLength": 32 },
+        "releaseDate": { "type": "string", "minLength": 8, "maxLength": 32 },
+        "minAndroidVersion": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "descriptionEn": { "type": "string", "minLength": 5, "maxLength": 1500 },
+        "descriptionSw": { "type": "string", "minLength": 5, "maxLength": 1500 },
+        "releaseNotesEn": { "type": "string", "minLength": 2, "maxLength": 3000 },
+        "releaseNotesSw": { "type": "string", "minLength": 2, "maxLength": 3000 },
+        "sha256Checksum": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[a-fA-F0-9]{64}$" },
+        "apkStoragePath": { "type": "string", "minLength": 5, "maxLength": 400 },
+        "apkDownloadUrl": { "type": "string", "minLength": 10, "maxLength": 1200 },
+        "createdBy": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "appName",
+        "versionName",
+        "versionCode",
+        "apkChannel",
+        "status",
+        "isLatest",
+        "fileSizeBytes",
+        "fileSizeDisplay",
+        "releaseDate",
+        "minAndroidVersion",
+        "descriptionEn",
+        "descriptionSw",
+        "releaseNotesEn",
+        "releaseNotesSw",
+        "sha256Checksum",
+        "apkStoragePath",
+        "apkDownloadUrl",
+        "createdBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AppScreenshot": {
+      "title": "AppScreenshot",
+      "description": "Publicly showcaseable Android app screenshot managed by administrators.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "titleSw": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "captionEn": { "type": "string", "minLength": 2, "maxLength": 300 },
+        "captionSw": { "type": "string", "minLength": 2, "maxLength": 300 },
+        "imageUrl": { "type": "string", "minLength": 5, "maxLength": 1000 },
+        "storagePath": { "type": "string", "minLength": 0, "maxLength": 400 },
+        "sortOrder": { "type": "integer" },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["titleEn", "titleSw", "captionEn", "captionSw", "imageUrl", "storagePath", "sortOrder", "status", "createdAt", "updatedAt"]
+    },
+    "InstallationGuide": {
+      "title": "InstallationGuide",
+      "description": "Bilingual step-by-step Android APK installation instruction step.",
+      "type": "object",
+      "properties": {
+        "stepNumber": { "type": "integer" },
+        "titleEn": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "titleSw": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "descriptionEn": { "type": "string", "minLength": 5, "maxLength": 1000 },
+        "descriptionSw": { "type": "string", "minLength": 5, "maxLength": 1000 },
+        "tipEn": { "type": "string", "minLength": 0, "maxLength": 400 },
+        "tipSw": { "type": "string", "minLength": 0, "maxLength": 400 },
+        "imageUrl": { "type": "string", "minLength": 0, "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["stepNumber", "titleEn", "titleSw", "descriptionEn", "descriptionSw", "tipEn", "tipSw", "imageUrl", "status", "createdAt", "updatedAt"]
+    },
+    "Tutorial": {
+      "title": "Tutorial",
+      "description": "Bilingual user guide tutorial section supporting text, screenshot image, and video link.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string", "minLength": 2, "maxLength": 80, "pattern": "^[a-z0-9\\-]+$" },
+        "category": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "sortOrder": { "type": "integer" },
+        "titleEn": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "titleSw": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "summaryEn": { "type": "string", "minLength": 5, "maxLength": 400 },
+        "summarySw": { "type": "string", "minLength": 5, "maxLength": 400 },
+        "contentEn": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "contentSw": { "type": "string", "minLength": 10, "maxLength": 4000 },
+        "imageUrl": { "type": "string", "minLength": 0, "maxLength": 1000 },
+        "videoUrl": { "type": "string", "minLength": 0, "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug", "category", "sortOrder", "titleEn", "titleSw", "summaryEn", "summarySw", "contentEn", "contentSw", "imageUrl", "videoUrl", "status", "createdAt", "updatedAt"]
+    },
+    "Faq": {
+      "title": "Faq",
+      "description": "Bilingual frequently asked question entry.",
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "sortOrder": { "type": "integer" },
+        "questionEn": { "type": "string", "minLength": 5, "maxLength": 250 },
+        "questionSw": { "type": "string", "minLength": 5, "maxLength": 250 },
+        "answerEn": { "type": "string", "minLength": 5, "maxLength": 2000 },
+        "answerSw": { "type": "string", "minLength": 5, "maxLength": 2000 },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["category", "sortOrder", "questionEn", "questionSw", "answerEn", "answerSw", "status", "createdAt", "updatedAt"]
+    },
+    "WebsiteSettings": {
+      "title": "WebsiteSettings",
+      "description": "Global bilingual portal configuration document.",
+      "type": "object",
+      "properties": {
+        "brandName": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "supportEmail": { "type": "string", "minLength": 5, "maxLength": 120 },
+        "supportPhone": { "type": "string", "minLength": 5, "maxLength": 40 },
+        "whatsappNumber": { "type": "string", "minLength": 5, "maxLength": 40 },
+        "officeAddressEn": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "officeAddressSw": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "heroHeadlineEn": { "type": "string", "minLength": 5, "maxLength": 160 },
+        "heroHeadlineSw": { "type": "string", "minLength": 5, "maxLength": 160 },
+        "heroSubheadlineEn": { "type": "string", "minLength": 5, "maxLength": 400 },
+        "heroSubheadlineSw": { "type": "string", "minLength": 5, "maxLength": 400 },
+        "showDownloadCounter": { "type": "boolean" },
+        "updatedBy": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "brandName",
+        "supportEmail",
+        "supportPhone",
+        "whatsappNumber",
+        "officeAddressEn",
+        "officeAddressSw",
+        "heroHeadlineEn",
+        "heroHeadlineSw",
+        "heroSubheadlineEn",
+        "heroSubheadlineSw",
+        "showDownloadCounter",
+        "updatedBy",
+        "updatedAt"
+      ]
+    },
+    "SupportMessage": {
+      "title": "SupportMessage",
+      "description": "Customer inquiry submitted via the public Support & Contact Us form.",
+      "type": "object",
+      "properties": {
+        "customerName": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "email": { "type": "string", "minLength": 5, "maxLength": 160 },
+        "subject": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "message": { "type": "string", "minLength": 10, "maxLength": 3000 },
+        "language": { "type": "string", "enum": ["en", "sw"] },
+        "status": { "type": "string", "enum": ["new", "in_progress", "resolved"] },
+        "adminNotes": { "type": "string", "minLength": 0, "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "email", "subject", "message", "language", "status", "adminNotes", "createdAt", "updatedAt"]
+    },
+    "DownloadStatistic": {
+      "title": "DownloadStatistic",
+      "description": "Verified download event tied to a published Customer APK version.",
+      "type": "object",
+      "properties": {
+        "versionId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "versionName": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "apkChannel": { "type": "string", "enum": ["customer"] },
+        "sourcePage": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "language": { "type": "string", "enum": ["en", "sw"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["versionId", "versionName", "apkChannel", "sourcePage", "language", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Authorized administrators list."
+    },
+    "/appVersions/{versionId}": {
+      "schema": { "$ref": "#/entities/AppVersion" },
+      "description": "Customer Android APK releases. Publicly readable only when status == 'published' and apkChannel == 'customer'."
+    },
+    "/appScreenshots/{screenshotId}": {
+      "schema": { "$ref": "#/entities/AppScreenshot" },
+      "description": "Android app preview screenshots."
+    },
+    "/installationGuides/{guideId}": {
+      "schema": { "$ref": "#/entities/InstallationGuide" },
+      "description": "Step-by-step Android installation instructions."
+    },
+    "/tutorials/{tutorialId}": {
+      "schema": { "$ref": "#/entities/Tutorial" },
+      "description": "User guide tutorial sections."
+    },
+    "/faqs/{faqId}": {
+      "schema": { "$ref": "#/entities/Faq" },
+      "description": "Frequently asked questions."
+    },
+    "/websiteSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/WebsiteSettings" },
+      "description": "Global website settings (doc ID: global)."
+    },
+    "/supportMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/SupportMessage" },
+      "description": "Private customer support inquiries; admin-only read/update/delete."
+    },
+    "/downloadStatistics/{statId}": {
+      "schema": { "$ref": "#/entities/DownloadStatistic" },
+      "description": "Download tracking events tied to published Customer APK releases."
+    }
+  }
+}
