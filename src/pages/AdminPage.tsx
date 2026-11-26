@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { collection, doc, getDocs, serverTimestamp, writeBatch } from 'firebase/firestore';
 import {
@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   Circle,
   Database,
+  Eye,
+  EyeOff,
   FileArchive,
   HelpCircle,
   Image as ImageIcon,
@@ -14,6 +16,7 @@ import {
   ListChecks,
   Lock,
   LogOut,
+  Mail,
   MessageSquare,
   Settings,
   ShieldAlert,
@@ -70,9 +73,27 @@ const NAV_ITEMS: { id: AdminTab; label: string; icon: typeof LayoutDashboard }[]
 ];
 
 export function AdminPage() {
-  const { user, authReady, isAdmin, checkingAdmin, authError, signInWithGoogle, signOutUser } =
-    useAuth();
+  const {
+    user,
+    authReady,
+    isAdmin,
+    checkingAdmin,
+    authError,
+    clearAuthError,
+    signInWithGoogle,
+    signInWithEmail,
+    resetPassword,
+    resendVerificationEmail,
+    signOutUser
+  } = useAuth();
   const { settings, refreshPublicData } = usePortalData();
+
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
+  const [authSubmitting, setAuthSubmitting] = useState(false);
+  const [authNotice, setAuthNotice] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [loadingAdminData, setLoadingAdminData] = useState(false);
@@ -250,6 +271,58 @@ export function AdminPage() {
     }
   };
 
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthNotice(null);
+    setAuthSubmitting(true);
+    try {
+      await signInWithEmail(loginEmail, loginPassword);
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthNotice(null);
+    setAuthSubmitting(true);
+    try {
+      const ok = await resetPassword(loginEmail);
+      if (ok) {
+        setAuthNotice(
+          `If an administrator account exists for ${loginEmail.trim()}, a password reset email has been sent. Check your inbox and spam folder.`
+        );
+      }
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setAuthNotice(null);
+    setAuthSubmitting(true);
+    try {
+      await signInWithGoogle();
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setAuthNotice(null);
+    setAuthSubmitting(true);
+    try {
+      const ok = await resendVerificationEmail();
+      if (ok) {
+        setAuthNotice(
+          `Verification email sent to ${user?.email}. Open the link in your inbox, then sign out and sign back in.`
+        );
+      }
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
   if (!authReady || checkingAdmin) {
     return (
       <div className="min-h-screen bg-[#F4F6F9] flex items-center justify-center p-6">
@@ -277,24 +350,183 @@ export function AdminPage() {
           <div className="mt-6 p-4 rounded-xl bg-[#F4F6F9] border border-slate-200 flex items-start gap-3">
             <Lock className="w-5 h-5 text-[#0B1F3A] shrink-0 mt-0.5" />
             <p className="text-sm text-slate-600 leading-relaxed">
-              Sign in with an authorized Google administrator account to upload Customer APKs,
-              manage guides, and review support messages.
+              {forgotPasswordMode
+                ? 'Enter your administrator email address below and we will send you a Firebase password reset link.'
+                : 'Sign in with an authorized administrator email and password or Google account to manage APK releases and portal content.'}
             </p>
           </div>
 
           {authError && (
-            <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+            <div
+              role="alert"
+              className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 leading-relaxed"
+            >
               {authError}
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => void signInWithGoogle()}
-            className="mt-6 w-full py-3 px-4 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] rounded-lg transition-colors"
-          >
-            Sign In with Google
-          </button>
+          {authNotice && (
+            <div
+              role="status"
+              className="mt-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed"
+            >
+              {authNotice}
+            </div>
+          )}
+
+          {forgotPasswordMode ? (
+            <form onSubmit={(e) => void handlePasswordReset(e)} className="mt-6 space-y-4">
+              <div>
+                <label
+                  htmlFor="admin-reset-email"
+                  className="block text-xs font-semibold text-[#0B1F3A] mb-1.5"
+                >
+                  Administrator Email
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    id="admin-reset-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="admin@fundiquotations.com"
+                    className="w-full pl-9 pr-3.5 py-2.5 border border-slate-300 rounded-lg text-sm text-[#0B1F3A] focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={authSubmitting}
+                className="w-full py-3 px-4 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-60 rounded-lg transition-colors"
+              >
+                {authSubmitting ? 'Sending Reset Link...' : 'Send Password Reset Email'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setForgotPasswordMode(false);
+                  clearAuthError();
+                  setAuthNotice(null);
+                }}
+                className="w-full py-2 text-xs font-semibold text-[#0B1F3A] hover:underline"
+              >
+                Back to Sign In
+              </button>
+            </form>
+          ) : (
+            <>
+              <form onSubmit={(e) => void handleEmailSignIn(e)} className="mt-6 space-y-4">
+                <div>
+                  <label
+                    htmlFor="admin-login-email"
+                    className="block text-xs font-semibold text-[#0B1F3A] mb-1.5"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    id="admin-login-email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="agripachotamasege23@gmail.com"
+                    className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm text-[#0B1F3A] focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label
+                      htmlFor="admin-login-password"
+                      className="block text-xs font-semibold text-[#0B1F3A]"
+                    >
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotPasswordMode(true);
+                        clearAuthError();
+                        setAuthNotice(null);
+                      }}
+                      className="text-xs font-semibold text-[#0B1F3A] hover:text-[#9A6B06] hover:underline"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      id="admin-login-password"
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="current-password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className="w-full pl-3.5 pr-10 py-2.5 border border-slate-300 rounded-lg text-sm text-[#0B1F3A] focus:outline-none focus:ring-2 focus:ring-[#0B1F3A]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-[#0B1F3A]"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={authSubmitting}
+                  className="w-full py-3 px-4 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-60 rounded-lg transition-colors"
+                >
+                  {authSubmitting ? 'Signing In...' : 'Sign In with Email'}
+                </button>
+              </form>
+
+              <div className="my-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-slate-200" />
+                <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                  or
+                </span>
+                <div className="h-px flex-1 bg-slate-200" />
+              </div>
+
+              <button
+                type="button"
+                disabled={authSubmitting}
+                onClick={() => void handleGoogleSignIn()}
+                className="w-full py-3 px-4 inline-flex items-center justify-center gap-2.5 text-sm font-semibold text-[#0B1F3A] bg-white border border-slate-300 hover:border-[#0B1F3A] hover:bg-slate-50 disabled:opacity-60 rounded-lg transition-colors"
+              >
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="#4285F4"
+                    d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"
+                  />
+                </svg>
+                <span>Sign in with Google</span>
+              </button>
+            </>
+          )}
 
           <div className="mt-6 pt-5 border-t border-slate-200 text-center">
             <Link
@@ -318,13 +550,48 @@ export function AdminPage() {
             <ShieldAlert className="w-6 h-6" />
           </div>
           <h1 className="mt-4 font-display text-xl font-bold text-[#0B1F3A]">
-            Administrator Access Required
+            {!user.emailVerified
+              ? 'Email Verification Required'
+              : 'Administrator Access Required'}
           </h1>
           <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-            The signed-in account (<span className="font-mono">{user.email}</span>) is not listed
-            as an authorized FundiQuotations portal administrator.
+            {!user.emailVerified ? (
+              <>
+                Your account (<span className="font-mono">{user.email}</span>) has not verified its
+                email address yet. Firebase Security Rules require a verified email before granting
+                admin access.
+              </>
+            ) : (
+              <>
+                The signed-in account (<span className="font-mono">{user.email}</span>) is not
+                listed as an authorized FundiQuotations portal administrator.
+              </>
+            )}
           </p>
-          <div className="mt-6 flex items-center justify-center gap-3">
+
+          {authError && (
+            <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 text-left">
+              {authError}
+            </div>
+          )}
+
+          {authNotice && (
+            <div className="mt-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 text-left">
+              {authNotice}
+            </div>
+          )}
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {!user.emailVerified && (
+              <button
+                type="button"
+                disabled={authSubmitting}
+                onClick={() => void handleResendVerification()}
+                className="px-4 py-2 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-60 rounded-lg"
+              >
+                Send Verification Email
+              </button>
+            )}
             <button
               type="button"
               onClick={() => void signOutUser()}

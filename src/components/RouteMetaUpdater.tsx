@@ -133,6 +133,8 @@ const ROUTE_META: Record<Language, Record<string, RouteMetaEntry>> = {
   }
 };
 
+const CANONICAL_BASE_URL = 'https://fundiquotations.com';
+
 function setMetaContent(selector: string, content: string) {
   const el = document.querySelector(selector);
   if (el) {
@@ -157,7 +159,8 @@ export function RouteMetaUpdater() {
     setMetaContent('meta[name="twitter:title"]', entry.title);
     setMetaContent('meta[name="twitter:description"]', entry.description);
 
-    const canonicalUrl = `${window.location.origin}${pathname}`;
+    const normalizedPath = pathname === '/' ? '/' : pathname.replace(/\/+$/, '');
+    const canonicalUrl = `${CANONICAL_BASE_URL}${normalizedPath}`;
     setMetaContent('meta[property="og:url"]', canonicalUrl);
 
     let canonicalLink = document.querySelector('link[rel="canonical"]');

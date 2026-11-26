@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { usePortalData } from '../context/PortalDataContext';
 import { BrandMark } from './BrandMark';
+import { PWAInstallButton } from './PWAInstallButton';
 
 export function Footer() {
   const { lang, t } = useLanguage();
@@ -25,6 +26,7 @@ export function Footer() {
             <p className="mt-4 text-xs text-slate-400">
               {t.footer.customerChannelNote}
             </p>
+            <PWAInstallButton />
           </div>
 
           <div>
@@ -116,14 +118,6 @@ export function Footer() {
               </li>
               <li>
                 {lang === 'sw' ? settings.officeAddressSw : settings.officeAddressEn}
-              </li>
-              <li className="pt-2">
-                <Link
-                  to="/admin"
-                  className="text-xs font-medium text-slate-400 hover:text-[#EAB308] transition-colors"
-                >
-                  {t.nav.admin}
-                </Link>
               </li>
             </ul>
           </div>
