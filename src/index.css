@@ -26,6 +26,51 @@
   }
 }
 
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #071426;
+  color: #f1f5f9;
+}
+
+.dark .bg-white {
+  background-color: #0F294A !important;
+  color: #f1f5f9 !important;
+  border-color: #163A66 !important;
+}
+
+.dark .bg-\[\#F4F6F9\] {
+  background-color: #071426 !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #0B1F3A !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #163A66 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .text-\[\#0B1F3A\] {
+  color: #F8FAFC !important;
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #CBD5E1 !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: #163A66 !important;
+}
+
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }

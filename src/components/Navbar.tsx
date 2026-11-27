@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown, Download, Menu, X } from 'lucide-react';
+import { ChevronDown, Download, Menu, Moon, Sun, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { usePortalData } from '../context/PortalDataContext';
+import { useTheme } from '../context/ThemeContext';
 import { BrandMark } from './BrandMark';
 
 export function Navbar() {
   const { lang, setLang, t } = useLanguage();
   const { settings } = usePortalData();
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [guidesOpen, setGuidesOpen] = useState(false);
   const guidesRef = useRef<HTMLDivElement>(null);
@@ -151,6 +153,16 @@ export function Navbar() {
               SW
             </button>
           </div>
+
+          {/* Theme Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-[#EAB308]" /> : <Moon className="w-4 h-4 text-[#0B1F3A]" />}
+          </button>
 
           <Link
             to="/download"

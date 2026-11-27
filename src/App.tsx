@@ -9,6 +9,7 @@ import { RouteMetaUpdater } from './components/RouteMetaUpdater';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { PortalDataProvider } from './context/PortalDataContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { AboutPage } from './pages/AboutPage';
 import { AccountDeletionPage } from './pages/AccountDeletionPage';
 import { AdminPage } from './pages/AdminPage';
@@ -32,7 +33,7 @@ function ScrollToTop() {
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F6F9]">
+    <div className="min-h-screen flex flex-col bg-[#F4F6F9] dark:bg-slate-950 dark:text-slate-100 transition-colors">
       <Navbar />
       <ReleaseBanner />
       <main className="flex-1">{children}</main>
@@ -61,7 +62,9 @@ export default function App() {
     return (
       <ErrorBoundary>
         <LanguageProvider>
-          <OfflineScreen />
+          <ThemeProvider>
+            <OfflineScreen />
+          </ThemeProvider>
         </LanguageProvider>
       </ErrorBoundary>
     );
@@ -70,12 +73,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <LanguageProvider>
-        <AuthProvider>
-          <PortalDataProvider>
-            <BrowserRouter>
-              <ScrollToTop />
-              <RouteMetaUpdater />
-              <Routes>
+        <ThemeProvider>
+          <AuthProvider>
+            <PortalDataProvider>
+              <BrowserRouter>
+                <ScrollToTop />
+                <RouteMetaUpdater />
+                <Routes>
                 <Route
                   path="/"
                   element={
@@ -170,7 +174,8 @@ export default function App() {
             </BrowserRouter>
           </PortalDataProvider>
         </AuthProvider>
-      </LanguageProvider>
-    </ErrorBoundary>
+      </ThemeProvider>
+    </LanguageProvider>
+  </ErrorBoundary>
   );
 }
