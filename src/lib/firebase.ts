@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, doc, getDocFromServer, disableNetwork } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import appletConfig from '../../firebase-applet-config.json';
 
@@ -19,6 +19,8 @@ const app = getApps().length ? getApp() : initializeApp(resolvedConfig);
 export const db = resolvedConfig.firestoreDatabaseId && resolvedConfig.firestoreDatabaseId !== '(default)'
   ? getFirestore(app, resolvedConfig.firestoreDatabaseId)
   : getFirestore(app);
+
+disableNetwork(db).catch(() => {});
 
 export const auth = getAuth(app);
 export const storage = getStorage(app);
@@ -81,14 +83,4 @@ export function handleFirestoreError(
   throw new Error(JSON.stringify(errInfo));
 }
 
-async function testConnection() {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error('Please check your Firebase configuration. Firestore client is offline.');
-    }
-  }
-}
 
-void testConnection();

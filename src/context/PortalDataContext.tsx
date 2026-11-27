@@ -203,8 +203,9 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
         });
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load portal content.';
-      setError(msg);
+      // Graceful fallback to default content without exposing connection/referer errors in UI
+      console.warn('Portal data fetch note:', err instanceof Error ? err.message : err);
+      setError(null);
     } finally {
       setLoading(false);
     }

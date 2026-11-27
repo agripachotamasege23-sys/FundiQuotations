@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Footer } from './components/Footer';
 import { Navbar } from './components/Navbar';
+import { OfflineScreen } from './components/OfflineScreen';
 import { ReleaseBanner } from './components/ReleaseBanner';
 import { RouteMetaUpdater } from './components/RouteMetaUpdater';
 import { AuthProvider } from './context/AuthContext';
@@ -41,6 +42,31 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  if (isOffline) {
+    return (
+      <ErrorBoundary>
+        <LanguageProvider>
+          <OfflineScreen />
+        </LanguageProvider>
+      </ErrorBoundary>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <LanguageProvider>
