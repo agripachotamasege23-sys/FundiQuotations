@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fundiquotations-portal-v2';
+const CACHE_NAME = 'fundiquotations-portal-v3';
 const SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -39,10 +39,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for HTML navigation so fresh deploys load immediately
+  // Network-first (no-store) for HTML navigation so fresh deploys load immediately
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
+      fetch(request, { cache: 'no-store' })
         .then((response) => {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', clone)).catch(() => undefined);

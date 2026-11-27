@@ -51,13 +51,13 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
     setError(null);
     try {
       const [
-        versionsSnap,
-        screenshotsSnap,
-        guidesSnap,
-        tutorialsSnap,
-        faqsSnap,
-        settingsSnap
-      ] = await Promise.all([
+        versionsRes,
+        screenshotsRes,
+        guidesRes,
+        tutorialsRes,
+        faqsRes,
+        settingsRes
+      ] = await Promise.allSettled([
         getDocs(
           query(
             collection(db, 'appVersions'),
@@ -72,14 +72,18 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
         getDoc(doc(db, 'websiteSettings', 'global'))
       ]);
 
-      const fetchedVersions = versionsSnap.docs
-        .map((d) => ({ id: d.id, ...(d.data() as Omit<AppVersion, 'id'>) }))
-        .filter((v) => v.apkChannel === 'customer' && v.status === 'published')
-        .sort((a, b) => (b.versionCode ?? 0) - (a.versionCode ?? 0));
+      if (versionsRes.status === 'fulfilled') {
+        const fetchedVersions = versionsRes.value.docs
+          .map((d) => ({ id: d.id, ...(d.data() as Omit<AppVersion, 'id'>) }))
+          .filter((v) => v.apkChannel === 'customer' && v.status === 'published')
+          .sort((a, b) => (b.versionCode ?? 0) - (a.versionCode ?? 0));
 
-      setPublishedVersions(fetchedVersions);
-      const explicitLatest = fetchedVersions.find((v) => v.isLatest) ?? fetchedVersions[0] ?? null;
-      setLatestVersion(explicitLatest);
+        setPublishedVersions(fetchedVersions);
+        const explicitLatest = fetchedVersions.find((v) => v.isLatest) ?? fetchedVersions[0] ?? null;
+        setLatestVersion(explicitLatest);
+      } else {
+        console.warn('App versions fetch skipped:', versionsRes.reason);
+      }
 
       const legacyScreenshotMap: Record<string, string> = {
         '/src/assets/images/app_preview_quotation_1795508411190.jpg':
@@ -100,67 +104,81 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
           APP_SCREENSHOT_PATHS.customers
       };
 
-      const fetchedScreenshots = screenshotsSnap.docs
-        .map((d) => {
-          const data = d.data() as Omit<AppScreenshot, 'id'>;
-          return {
-            id: d.id,
-            ...data,
-            imageUrl: legacyScreenshotMap[data.imageUrl] ?? data.imageUrl
-          };
-        })
-        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-      setScreenshots(fetchedScreenshots.length > 0 ? fetchedScreenshots : DEFAULT_SCREENSHOTS);
+      if (screenshotsRes.status === 'fulfilled') {
+        const fetchedScreenshots = screenshotsRes.value.docs
+          .map((d) => {
+            const data = d.data() as Omit<AppScreenshot, 'id'>;
+            return {
+              id: d.id,
+              ...data,
+              imageUrl: legacyScreenshotMap[data.imageUrl] ?? data.imageUrl
+            };
+          })
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        if (fetchedScreenshots.length > 0) {
+          setScreenshots(fetchedScreenshots);
+        }
+      }
 
-      const fetchedGuides = guidesSnap.docs
-        .map((d) => ({ id: d.id, ...(d.data() as Omit<InstallationGuideStep, 'id'>) }))
-        .sort((a, b) => (a.stepNumber ?? 0) - (b.stepNumber ?? 0));
-      setInstallationGuides(
-        fetchedGuides.length > 0 ? fetchedGuides : DEFAULT_INSTALLATION_GUIDES
-      );
+      if (guidesRes.status === 'fulfilled') {
+        const fetchedGuides = guidesRes.value.docs
+          .map((d) => ({ id: d.id, ...(d.data() as Omit<InstallationGuideStep, 'id'>) }))
+          .sort((a, b) => (a.stepNumber ?? 0) - (b.stepNumber ?? 0));
+        if (fetchedGuides.length > 0) {
+          setInstallationGuides(fetchedGuides);
+        }
+      }
 
-      const defaultTutorialImageById = Object.fromEntries(
-        DEFAULT_TUTORIALS.map((tut) => [tut.id, tut.imageUrl])
-      );
+      if (tutorialsRes.status === 'fulfilled') {
+        const defaultTutorialImageById = Object.fromEntries(
+          DEFAULT_TUTORIALS.map((tut) => [tut.id, tut.imageUrl])
+        );
 
-      const fetchedTutorials = tutorialsSnap.docs
-        .map((d) => {
-          const data = d.data() as Omit<TutorialSection, 'id'>;
-          const mappedUrl = legacyScreenshotMap[data.imageUrl];
-          const isLegacyOrEmpty =
-            !data.imageUrl || data.imageUrl.startsWith('/src/assets/images/');
-          return {
-            id: d.id,
-            ...data,
-            imageUrl: mappedUrl
-              ? mappedUrl
-              : isLegacyOrEmpty
-                ? defaultTutorialImageById[d.id] ?? ''
-                : data.imageUrl
-          };
-        })
-        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-      setTutorials(fetchedTutorials.length > 0 ? fetchedTutorials : DEFAULT_TUTORIALS);
+        const fetchedTutorials = tutorialsRes.value.docs
+          .map((d) => {
+            const data = d.data() as Omit<TutorialSection, 'id'>;
+            const mappedUrl = legacyScreenshotMap[data.imageUrl];
+            const isLegacyOrEmpty =
+              !data.imageUrl || data.imageUrl.startsWith('/src/assets/images/');
+            return {
+              id: d.id,
+              ...data,
+              imageUrl: mappedUrl
+                ? mappedUrl
+                : isLegacyOrEmpty
+                  ? defaultTutorialImageById[d.id] ?? ''
+                  : data.imageUrl
+            };
+          })
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        if (fetchedTutorials.length > 0) {
+          setTutorials(fetchedTutorials);
+        }
+      }
 
-      const fetchedFaqs = faqsSnap.docs
-        .map((d) => {
-          const data = d.data() as Omit<FaqItem, 'id'>;
-          const isLegacyFaq1 =
-            d.id === 'faq-1' &&
-            (/sha-?256|verify authenticity/i.test(data.answerEn ?? '') ||
-              /sha-?256/i.test(data.answerSw ?? ''));
-          return {
-            id: d.id,
-            ...data,
-            answerEn: isLegacyFaq1 ? DEFAULT_FAQS[0].answerEn : data.answerEn,
-            answerSw: isLegacyFaq1 ? DEFAULT_FAQS[0].answerSw : data.answerSw
-          };
-        })
-        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-      setFaqs(fetchedFaqs.length > 0 ? fetchedFaqs : DEFAULT_FAQS);
+      if (faqsRes.status === 'fulfilled') {
+        const fetchedFaqs = faqsRes.value.docs
+          .map((d) => {
+            const data = d.data() as Omit<FaqItem, 'id'>;
+            const isLegacyFaq1 =
+              d.id === 'faq-1' &&
+              (/sha-?256|verify authenticity/i.test(data.answerEn ?? '') ||
+                /sha-?256/i.test(data.answerSw ?? ''));
+            return {
+              id: d.id,
+              ...data,
+              answerEn: isLegacyFaq1 ? DEFAULT_FAQS[0].answerEn : data.answerEn,
+              answerSw: isLegacyFaq1 ? DEFAULT_FAQS[0].answerSw : data.answerSw
+            };
+          })
+          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+        if (fetchedFaqs.length > 0) {
+          setFaqs(fetchedFaqs);
+        }
+      }
 
-      if (settingsSnap.exists()) {
-        const remote = settingsSnap.data() as Partial<WebsiteSettings>;
+      if (settingsRes.status === 'fulfilled' && settingsRes.value.exists()) {
+        const remote = settingsRes.value.data() as Partial<WebsiteSettings>;
         const normalizeEmail = (value: string | undefined, fallback: string) =>
           !value || value.trim() === 'support@fundiquotations.com' ? fallback : value;
         const normalizePhone = (value: string | undefined, fallback: string) =>
@@ -203,7 +221,6 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
         });
       }
     } catch (err) {
-      // Graceful fallback to default content without exposing connection/referer errors in UI
       console.warn('Portal data fetch note:', err instanceof Error ? err.message : err);
       setError(null);
     } finally {

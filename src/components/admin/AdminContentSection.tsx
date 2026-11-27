@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { Plus, Trash2 } from 'lucide-react';
-import { db, handleFirestoreError, OperationType, storage } from '../../lib/firebase';
+import { db, formatFirestoreActionError, OperationType, storage } from '../../lib/firebase';
 import {
   AppScreenshot,
   ContentStatus,
@@ -111,7 +111,7 @@ export function AdminContentSection({
       });
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `${colName}/${id}`);
+      setStatusMessage(formatFirestoreActionError(err, OperationType.UPDATE, `${colName}/${id}`));
     } finally {
       setBusy(false);
     }
@@ -123,7 +123,7 @@ export function AdminContentSection({
       await deleteDoc(doc(db, colName, id));
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `${colName}/${id}`);
+      setStatusMessage(formatFirestoreActionError(err, OperationType.DELETE, `${colName}/${id}`));
     } finally {
       setBusy(false);
     }
@@ -153,7 +153,7 @@ export function AdminContentSection({
       setStatusMessage('Screenshot saved.');
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'appScreenshots');
+      setStatusMessage(formatFirestoreActionError(err, OperationType.CREATE, 'appScreenshots'));
     } finally {
       setBusy(false);
     }
@@ -186,7 +186,7 @@ export function AdminContentSection({
       setStatusMessage('Installation guide step saved.');
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'installationGuides');
+      setStatusMessage(formatFirestoreActionError(err, OperationType.CREATE, 'installationGuides'));
     } finally {
       setBusy(false);
     }
@@ -229,7 +229,7 @@ export function AdminContentSection({
       setStatusMessage('Tutorial saved.');
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'tutorials');
+      setStatusMessage(formatFirestoreActionError(err, OperationType.CREATE, 'tutorials'));
     } finally {
       setBusy(false);
     }
@@ -257,7 +257,7 @@ export function AdminContentSection({
       setStatusMessage('FAQ saved.');
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, 'faqs');
+      setStatusMessage(formatFirestoreActionError(err, OperationType.CREATE, 'faqs'));
     } finally {
       setBusy(false);
     }

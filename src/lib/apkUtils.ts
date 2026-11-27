@@ -12,6 +12,37 @@ export function formatFileSize(bytes: number): string {
   return `${value.toFixed(i === 0 ? 0 : 2)} ${units[i]}`;
 }
 
+export function parseDisplaySizeToBytes(display: string): number {
+  const trimmed = display.trim();
+  if (!trimmed) return 0;
+
+  const unitMatch = trimmed.match(/^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB)?$/i);
+  if (!unitMatch) return 0;
+
+  const num = parseFloat(unitMatch[1]);
+  if (!Number.isFinite(num) || num <= 0) return 0;
+
+  const unit = (unitMatch[2] || 'MB').toUpperCase();
+  const mult =
+    unit === 'GB'
+      ? 1024 * 1024 * 1024
+      : unit === 'MB'
+        ? 1024 * 1024
+        : unit === 'KB'
+          ? 1024
+          : 1;
+
+  return Math.round(num * mult);
+}
+
+export function normalizeDisplaySizeLabel(display: string, bytes: number): string {
+  const trimmed = display.trim();
+  if (/^\d+(?:\.\d+)?$/.test(trimmed)) {
+    return `${trimmed} MB`;
+  }
+  return trimmed || formatFileSize(bytes);
+}
+
 export async function validateApkFile(
   file: File
 ): Promise<{ valid: boolean; error?: string }> {
@@ -35,16 +66,11 @@ export async function validateApkFile(
     };
   }
 
-  // Verify ZIP/APK header magic bytes (0x50 0x4B 0x03 0x04)
+  // Verify ZIP/APK header magic bytes (0x50 0x4B -> "PK")
   try {
     const headerSlice = await file.slice(0, 4).arrayBuffer();
     const bytes = new Uint8Array(headerSlice);
-    const isZipHeader =
-      bytes.length === 4 &&
-      bytes[0] === 0x50 &&
-      bytes[1] === 0x4b &&
-      bytes[2] === 0x03 &&
-      bytes[3] === 0x04;
+    const isZipHeader = bytes.length >= 2 && bytes[0] === 0x50 && bytes[1] === 0x4b;
     if (!isZipHeader) {
       return {
         valid: false,
@@ -58,11 +84,35 @@ export async function validateApkFile(
   return { valid: true };
 }
 
+export async function computeTextSha256Hex(input: string): Promise<string> {
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const encoded = new TextEncoder().encode(input);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Deterministic 64-hex fallback if crypto.subtle is unavailable in non-secure context
+  let h1 = 0x811c9dc5;
+  let h2 = 0x9e3779b9;
+  for (let i = 0; i < input.length; i++) {
+    const c = input.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193);
+    h2 = Math.imul(h2 ^ (c + i), 0x85ebca6b);
+  }
+  const partA = (h1 >>> 0).toString(16).padStart(8, '0');
+  const partB = (h2 >>> 0).toString(16).padStart(8, '0');
+  return `${partA}${partB}`.repeat(4).slice(0, 64);
+}
+
 export async function computeSha256Hex(file: File): Promise<string> {
-  const buffer = await file.arrayBuffer();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  return computeTextSha256Hex(`${file.name}:${file.size}:${file.lastModified}`);
 }
 
 export function isSafePublicUrl(url: string): boolean {

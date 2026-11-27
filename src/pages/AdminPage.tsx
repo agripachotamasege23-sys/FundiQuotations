@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { collection, doc, getDocs, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, serverTimestamp, writeBatch } from 'firebase/firestore';
 import {
+  AlertCircle,
   ArrowLeft,
   BookOpen,
   CheckCircle2,
@@ -24,7 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { usePortalData } from '../context/PortalDataContext';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { db, formatFirestoreActionError, OperationType } from '../lib/firebase';
 import {
   DEFAULT_FAQS,
   DEFAULT_INSTALLATION_GUIDES,
@@ -97,6 +98,7 @@ export function AdminPage() {
 
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [loadingAdminData, setLoadingAdminData] = useState(false);
+  const [adminError, setAdminError] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
   const [seedMessage, setSeedMessage] = useState<string | null>(null);
 
@@ -111,8 +113,9 @@ export function AdminPage() {
   const loadAdminData = useCallback(async () => {
     if (!isAdmin) return;
     setLoadingAdminData(true);
+    setAdminError(null);
     try {
-      const [vSnap, sSnap, gSnap, tSnap, fSnap, mSnap, dSnap] = await Promise.all([
+      const [vRes, sRes, gRes, tRes, fRes, mRes, dRes] = await Promise.allSettled([
         getDocs(collection(db, 'appVersions')),
         getDocs(collection(db, 'appScreenshots')),
         getDocs(collection(db, 'installationGuides')),
@@ -122,39 +125,65 @@ export function AdminPage() {
         getDocs(collection(db, 'downloadStatistics'))
       ]);
 
-      setVersions(
-        vSnap.docs
-          .map((d) => ({ id: d.id, ...(d.data() as Omit<AppVersion, 'id'>) }))
-          .sort((a, b) => (b.versionCode ?? 0) - (a.versionCode ?? 0))
+      const firstRejected = [vRes, sRes, gRes, tRes, fRes, mRes, dRes].find(
+        (res): res is PromiseRejectedResult => res.status === 'rejected'
       );
-      setScreenshots(
-        sSnap.docs
-          .map((d) => ({ id: d.id, ...(d.data() as Omit<AppScreenshot, 'id'>) }))
-          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-      );
-      setGuides(
-        gSnap.docs
-          .map((d) => ({ id: d.id, ...(d.data() as Omit<InstallationGuideStep, 'id'>) }))
-          .sort((a, b) => (a.stepNumber ?? 0) - (b.stepNumber ?? 0))
-      );
-      setTutorials(
-        tSnap.docs
-          .map((d) => ({ id: d.id, ...(d.data() as Omit<TutorialSection, 'id'>) }))
-          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-      );
-      setFaqs(
-        fSnap.docs
-          .map((d) => ({ id: d.id, ...(d.data() as Omit<FaqItem, 'id'>) }))
-          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-      );
-      setMessages(
-        mSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SupportMessage, 'id'>) }))
-      );
-      setDownloads(
-        dSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<DownloadStatistic, 'id'>) }))
-      );
+      if (firstRejected) {
+        setAdminError(
+          formatFirestoreActionError(firstRejected.reason, OperationType.LIST, 'admin_dashboard')
+        );
+      }
+
+      if (vRes.status === 'fulfilled') {
+        setVersions(
+          vRes.value.docs
+            .map((d) => ({ id: d.id, ...(d.data() as Omit<AppVersion, 'id'>) }))
+            .sort((a, b) => (b.versionCode ?? 0) - (a.versionCode ?? 0))
+        );
+      }
+      if (sRes.status === 'fulfilled') {
+        setScreenshots(
+          sRes.value.docs
+            .map((d) => ({ id: d.id, ...(d.data() as Omit<AppScreenshot, 'id'>) }))
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        );
+      }
+      if (gRes.status === 'fulfilled') {
+        setGuides(
+          gRes.value.docs
+            .map((d) => ({ id: d.id, ...(d.data() as Omit<InstallationGuideStep, 'id'>) }))
+            .sort((a, b) => (a.stepNumber ?? 0) - (b.stepNumber ?? 0))
+        );
+      }
+      if (tRes.status === 'fulfilled') {
+        setTutorials(
+          tRes.value.docs
+            .map((d) => ({ id: d.id, ...(d.data() as Omit<TutorialSection, 'id'>) }))
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        );
+      }
+      if (fRes.status === 'fulfilled') {
+        setFaqs(
+          fRes.value.docs
+            .map((d) => ({ id: d.id, ...(d.data() as Omit<FaqItem, 'id'>) }))
+            .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+        );
+      }
+      if (mRes.status === 'fulfilled') {
+        setMessages(
+          mRes.value.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SupportMessage, 'id'>) }))
+        );
+      }
+      if (dRes.status === 'fulfilled') {
+        setDownloads(
+          dRes.value.docs.map((d) => ({
+            id: d.id,
+            ...(d.data() as Omit<DownloadStatistic, 'id'>)
+          }))
+        );
+      }
     } catch (err) {
-      handleFirestoreError(err, OperationType.LIST, 'admin_dashboard');
+      setAdminError(formatFirestoreActionError(err, OperationType.LIST, 'admin_dashboard'));
     } finally {
       setLoadingAdminData(false);
     }
@@ -245,27 +274,32 @@ export function AdminPage() {
         });
       }
 
-      batch.set(doc(db, 'websiteSettings', 'global'), {
-        brandName: DEFAULT_WEBSITE_SETTINGS.brandName,
-        supportEmail: DEFAULT_WEBSITE_SETTINGS.supportEmail,
-        supportPhone: DEFAULT_WEBSITE_SETTINGS.supportPhone,
-        whatsappNumber: DEFAULT_WEBSITE_SETTINGS.whatsappNumber,
-        officeAddressEn: DEFAULT_WEBSITE_SETTINGS.officeAddressEn,
-        officeAddressSw: DEFAULT_WEBSITE_SETTINGS.officeAddressSw,
-        heroHeadlineEn: DEFAULT_WEBSITE_SETTINGS.heroHeadlineEn,
-        heroHeadlineSw: DEFAULT_WEBSITE_SETTINGS.heroHeadlineSw,
-        heroSubheadlineEn: DEFAULT_WEBSITE_SETTINGS.heroSubheadlineEn,
-        heroSubheadlineSw: DEFAULT_WEBSITE_SETTINGS.heroSubheadlineSw,
-        showDownloadCounter: DEFAULT_WEBSITE_SETTINGS.showDownloadCounter,
-        updatedBy: user.uid,
-        updatedAt: serverTimestamp()
-      });
+      const existingSettingsSnap = await getDoc(doc(db, 'websiteSettings', 'global'));
+      if (!existingSettingsSnap.exists()) {
+        batch.set(doc(db, 'websiteSettings', 'global'), {
+          brandName: DEFAULT_WEBSITE_SETTINGS.brandName,
+          supportEmail: DEFAULT_WEBSITE_SETTINGS.supportEmail,
+          supportPhone: DEFAULT_WEBSITE_SETTINGS.supportPhone,
+          whatsappNumber: DEFAULT_WEBSITE_SETTINGS.whatsappNumber,
+          officeAddressEn: DEFAULT_WEBSITE_SETTINGS.officeAddressEn,
+          officeAddressSw: DEFAULT_WEBSITE_SETTINGS.officeAddressSw,
+          heroHeadlineEn: DEFAULT_WEBSITE_SETTINGS.heroHeadlineEn,
+          heroHeadlineSw: DEFAULT_WEBSITE_SETTINGS.heroHeadlineSw,
+          heroSubheadlineEn: DEFAULT_WEBSITE_SETTINGS.heroSubheadlineEn,
+          heroSubheadlineSw: DEFAULT_WEBSITE_SETTINGS.heroSubheadlineSw,
+          showDownloadCounter: DEFAULT_WEBSITE_SETTINGS.showDownloadCounter,
+          updatedBy: user.uid,
+          updatedAt: serverTimestamp()
+        });
+      }
 
       await batch.commit();
-      setSeedMessage('Default bilingual guides, tutorials, FAQs, screenshots, and settings initialized in Firestore.');
+      setSeedMessage(
+        'Empty Firestore collections were populated without overwriting existing APK releases or customized settings.'
+      );
       await handleRefreshAll();
     } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'seed_defaults');
+      setAdminError(formatFirestoreActionError(err, OperationType.WRITE, 'seed_defaults'));
     } finally {
       setSeeding(false);
     }
@@ -700,7 +734,26 @@ export function AdminPage() {
         <main className="p-6 lg:p-8 max-w-6xl w-full">
           {loadingAdminData && (
             <div className="mb-4 text-xs font-medium text-slate-500">
-              Synchronizing Firestore records...
+              Synchronizing Cloud Firestore records...
+            </div>
+          )}
+
+          {adminError && (
+            <div
+              role="alert"
+              className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-800 flex items-start justify-between gap-3"
+            >
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{adminError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => void handleRefreshAll()}
+                className="px-3 py-1.5 text-xs font-semibold bg-white border border-red-300 text-red-800 rounded-lg hover:bg-red-100 shrink-0"
+              >
+                Retry
+              </button>
             </div>
           )}
 

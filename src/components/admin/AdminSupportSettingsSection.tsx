@@ -6,8 +6,8 @@ import {
   setDoc,
   updateDoc
 } from 'firebase/firestore';
-import { CheckCircle2, Save, Trash2 } from 'lucide-react';
-import { db, handleFirestoreError, OperationType } from '../../lib/firebase';
+import { AlertCircle, CheckCircle2, Save, Trash2 } from 'lucide-react';
+import { db, formatFirestoreActionError, OperationType } from '../../lib/firebase';
 import { SupportMessage, SupportStatus, WebsiteSettings } from '../../types/portal';
 
 interface SupportSectionProps {
@@ -19,11 +19,13 @@ export function AdminSupportSection({ messages, onRefresh }: SupportSectionProps
   const [filter, setFilter] = useState<'all' | SupportStatus>('all');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
+  const [supportError, setSupportError] = useState<string | null>(null);
 
   const filtered = messages.filter((m) => filter === 'all' || m.status === filter);
 
   const handleUpdateMessage = async (msg: SupportMessage, nextStatus: SupportStatus) => {
     setBusyId(msg.id);
+    setSupportError(null);
     try {
       const notes = notesDraft[msg.id] !== undefined ? notesDraft[msg.id] : msg.adminNotes;
       await updateDoc(doc(db, 'supportMessages', msg.id), {
@@ -33,7 +35,9 @@ export function AdminSupportSection({ messages, onRefresh }: SupportSectionProps
       });
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `supportMessages/${msg.id}`);
+      setSupportError(
+        formatFirestoreActionError(err, OperationType.UPDATE, `supportMessages/${msg.id}`)
+      );
     } finally {
       setBusyId(null);
     }
@@ -41,11 +45,14 @@ export function AdminSupportSection({ messages, onRefresh }: SupportSectionProps
 
   const handleDeleteMessage = async (id: string) => {
     setBusyId(id);
+    setSupportError(null);
     try {
       await deleteDoc(doc(db, 'supportMessages', id));
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `supportMessages/${id}`);
+      setSupportError(
+        formatFirestoreActionError(err, OperationType.DELETE, `supportMessages/${id}`)
+      );
     } finally {
       setBusyId(null);
     }
@@ -53,6 +60,15 @@ export function AdminSupportSection({ messages, onRefresh }: SupportSectionProps
 
   return (
     <div className="space-y-5">
+      {supportError && (
+        <div
+          role="alert"
+          className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-sm text-red-800 flex items-center gap-2"
+        >
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span>{supportError}</span>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         {(['all', 'new', 'in_progress', 'resolved'] as const).map((status) => (
           <button
@@ -158,6 +174,7 @@ export function AdminSettingsSection({
   const [form, setForm] = useState<WebsiteSettings>(settings);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     setForm(settings);
@@ -167,6 +184,7 @@ export function AdminSettingsSection({
     e.preventDefault();
     setSaving(true);
     setSaved(false);
+    setSaveError(null);
     try {
       await setDoc(doc(db, 'websiteSettings', 'global'), {
         brandName: form.brandName.trim(),
@@ -186,7 +204,9 @@ export function AdminSettingsSection({
       setSaved(true);
       await onRefresh();
     } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, 'websiteSettings/global');
+      setSaveError(
+        formatFirestoreActionError(err, OperationType.WRITE, 'websiteSettings/global')
+      );
     } finally {
       setSaving(false);
     }
@@ -200,6 +220,16 @@ export function AdminSettingsSection({
       <h2 className="font-display text-lg font-bold text-[#0B1F3A]">
         Global Portal Settings
       </h2>
+
+      {saveError && (
+        <div
+          role="alert"
+          className="p-3.5 rounded-lg bg-red-50 border border-red-200 text-sm text-red-800 flex items-center gap-2"
+        >
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+          <span>{saveError}</span>
+        </div>
+      )}
 
       {saved && (
         <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-sm text-emerald-900 flex items-center gap-2">
