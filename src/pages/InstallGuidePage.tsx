@@ -153,7 +153,7 @@ function StepIllustration({
                 aria-hidden="true"
                 className="w-10 h-5.5 rounded-full bg-emerald-600 p-0.5 flex items-center justify-end shrink-0"
               >
-                <span className="w-4.5 h-4.5 rounded-full bg-white shadow-xs" />
+                <span className="w-4.5 h-4.5 rounded-full bg-[#FFFFFF] shadow-xs" />
               </div>
             </div>
           </div>

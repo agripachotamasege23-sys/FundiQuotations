@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
@@ -38,7 +39,12 @@
 .dark .bg-white {
   background-color: #0F294A !important;
   color: #f1f5f9 !important;
-  border-color: #163A66 !important;
+  border-color: #1E4473 !important;
+}
+
+.dark .bg-white\/95 {
+  background-color: rgba(11, 31, 58, 0.95) !important;
+  color: #f1f5f9 !important;
 }
 
 .dark .bg-\[\#F4F6F9\] {
@@ -55,8 +61,30 @@
   color: #f1f5f9 !important;
 }
 
+.dark .bg-slate-200 {
+  background-color: #1E4473 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Text contrast in dark mode */
 .dark .text-\[\#0B1F3A\] {
   color: #F8FAFC !important;
+}
+
+/* Keep dark navy text readable on gold/amber buttons and badges */
+.dark .bg-\[\#EAB308\],
+.dark .bg-\[\#EAB308\] .text-\[\#0B1F3A\],
+.dark .bg-\[\#D99B16\],
+.dark .bg-\[\#D99B16\] .text-\[\#0B1F3A\],
+.dark .bg-\[\#FEF3C7\],
+.dark .bg-\[\#FEF3C7\] .text-\[\#0B1F3A\],
+.dark .bg-\[\#FDE68A\],
+.dark .bg-\[\#FDE68A\] .text-\[\#0B1F3A\] {
+  color: #0B1F3A !important;
+}
+
+.dark .text-\[\#9A6B06\] {
+  color: #FACC15 !important;
 }
 
 .dark .text-slate-900,
@@ -66,9 +94,94 @@
   color: #CBD5E1 !important;
 }
 
+.dark .text-slate-500 {
+  color: #94A3B8 !important;
+}
+
+.dark .text-red-600 {
+  color: #FCA5A5 !important;
+}
+
+/* Hover states in dark mode */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover {
+  background-color: #163A66 !important;
+  color: #F8FAFC !important;
+}
+
+.dark .hover\:bg-slate-200:hover {
+  background-color: #1E4473 !important;
+  color: #F8FAFC !important;
+}
+
+.dark .hover\:text-\[\#0B1F3A\]:hover,
+.dark .hover\:text-\[\#163A66\]:hover,
+.dark .hover\:text-\[\#9A6B06\]:hover {
+  color: #FACC15 !important;
+}
+
+.dark .hover\:border-\[\#0B1F3A\]:hover,
+.dark .hover\:border-\[\#0B1F3A\]\/40:hover {
+  border-color: #EAB308 !important;
+}
+
+/* Borders & Dividers */
+.dark .border-slate-100,
 .dark .border-slate-200,
-.dark .border-slate-300 {
-  border-color: #163A66 !important;
+.dark .border-slate-300,
+.dark .border-slate-200\/80 {
+  border-color: #1E4473 !important;
+}
+
+.dark .divide-slate-200 > :not(:last-child),
+.dark .divide-slate-100 > :not(:last-child) {
+  border-color: #1E4473 !important;
+}
+
+/* Form inputs in dark mode */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  background-color: #0B1F3A !important;
+  color: #F8FAFC !important;
+  border-color: #244B7A !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* Active navy buttons on dark surfaces */
+.dark button.bg-\[\#0B1F3A\],
+.dark a.bg-\[\#0B1F3A\] {
+  background-color: #1E4473 !important;
+  border-color: #3B6998 !important;
+  color: #FFFFFF !important;
+}
+
+/* Alert & status banners */
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+  color: #D1FAE5 !important;
+}
+
+.dark .text-emerald-950,
+.dark .text-emerald-900,
+.dark .text-emerald-700 {
+  color: #6EE7B7 !important;
+}
+
+.dark .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(248, 113, 113, 0.35) !important;
+  color: #FECACA !important;
+}
+
+.dark .text-red-800,
+.dark .text-red-700 {
+  color: #FCA5A5 !important;
 }
 
 .tabular-nums {

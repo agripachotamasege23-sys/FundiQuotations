@@ -28,6 +28,7 @@ export function HomePage() {
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   const [activePreview, setActivePreview] = useState<AppScreenshot | null>(null);
   const [showStickyDownload, setShowStickyDownload] = useState(false);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
   const [downloadingApk, setDownloadingApk] = useState(false);
   const [downloadToast, setDownloadToast] = useState<string | null>(null);
   const heroCtaRef = useRef<HTMLDivElement>(null);
@@ -64,20 +65,36 @@ export function HomePage() {
   };
 
   useEffect(() => {
-    const el = heroCtaRef.current;
-    if (!el) return;
+    const updateStickyState = () => {
+      const heroEl = heroCtaRef.current;
+      const footerEl = document.querySelector('footer');
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // Show sticky bottom bar only once user scrolls past the Hero Download button
-        const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 80;
-        setShowStickyDownload(scrolledPast);
-      },
-      { threshold: 0.1 }
-    );
+      const pastHero = heroEl ? heroEl.getBoundingClientRect().bottom < 80 : false;
+      const footerVisible = footerEl
+        ? footerEl.getBoundingClientRect().top < window.innerHeight
+        : false;
 
-    observer.observe(el);
-    return () => observer.disconnect();
+      setShowStickyDownload(pastHero);
+      setIsFooterVisible(footerVisible);
+    };
+
+    updateStickyState();
+
+    window.addEventListener('scroll', updateStickyState, { passive: true });
+    window.addEventListener('resize', updateStickyState, { passive: true });
+
+    const observer = new IntersectionObserver(updateStickyState, {
+      threshold: [0, 0.05, 0.1]
+    });
+    if (heroCtaRef.current) observer.observe(heroCtaRef.current);
+    const footerEl = document.querySelector('footer');
+    if (footerEl) observer.observe(footerEl);
+
+    return () => {
+      window.removeEventListener('scroll', updateStickyState);
+      window.removeEventListener('resize', updateStickyState);
+      observer.disconnect();
+    };
   }, []);
 
   const heroHeadline =
@@ -746,7 +763,7 @@ export function HomePage() {
         <div
           role="status"
           className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 w-full max-w-md ${
-            showStickyDownload && !activePreview ? 'bottom-20' : 'bottom-5'
+            showStickyDownload && !isFooterVisible && !activePreview ? 'bottom-20' : 'bottom-5'
           }`}
         >
           <div className="bg-[#0B1F3A] text-white border border-[#163A66] rounded-xl px-4 py-3 shadow-xl flex items-center justify-between gap-3 text-xs sm:text-sm">
@@ -767,7 +784,7 @@ export function HomePage() {
       )}
 
       {/* Sticky Bottom Floating Download Bar on Scroll */}
-      {showStickyDownload && !activePreview && (
+      {showStickyDownload && !isFooterVisible && !activePreview && (
         <div className="fixed bottom-4 left-0 right-0 z-30 px-4 pointer-events-none">
           <div className="max-w-md mx-auto pointer-events-auto">
             <button
