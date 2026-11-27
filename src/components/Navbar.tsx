@@ -43,15 +43,15 @@ export function Navbar() {
     location.pathname === '/faq';
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0B1F3A]/95 backdrop-blur-sm border-b border-slate-200 dark:border-[#1E4473]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+    <header className="portal-navbar sticky top-0 z-40 bg-white/95 dark:bg-[#0B1F3A]/95 backdrop-blur-sm border-b border-slate-200 dark:border-[#1E4473]">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-6">
         {/* Zone 1: Single-line Brand Wordmark */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B1F3A] rounded-md"
+          className="flex items-center gap-2 sm:gap-2.5 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B1F3A] rounded-md min-w-0"
         >
-          <BrandMark className="w-9 h-9 shrink-0" />
-          <span className="font-display text-lg font-bold tracking-tight text-[#0B1F3A] dark:text-white whitespace-nowrap">
+          <BrandMark className="w-8 h-8 sm:w-9 sm:h-9 shrink-0" />
+          <span className="portal-brand-text font-display text-base sm:text-lg font-bold tracking-tight text-[#0B1F3A] dark:text-white whitespace-nowrap">
             {settings.brandName || 'FundiQuotations'}
           </span>
         </Link>
@@ -121,8 +121,8 @@ export function Navbar() {
           </NavLink>
         </nav>
 
-        {/* Zone 3: Language Switcher + Primary Download Action */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Language Switcher + Theme Toggle + Primary Download Action */}
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <div
             className="inline-flex items-center p-0.5 bg-slate-100 dark:bg-[#0F294A] border border-slate-200 dark:border-[#1E4473] rounded-lg"
             role="group"
@@ -132,7 +132,7 @@ export function Navbar() {
               type="button"
               onClick={() => setLang('en')}
               aria-pressed={lang === 'en'}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 ${
+              className={`px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 lang === 'en'
                   ? 'bg-[#0B1F3A] text-white'
                   : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
@@ -144,7 +144,7 @@ export function Navbar() {
               type="button"
               onClick={() => setLang('sw')}
               aria-pressed={lang === 'sw'}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 ${
+              className={`px-2 sm:px-2.5 py-1 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 lang === 'sw'
                   ? 'bg-[#0B1F3A] text-white'
                   : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
@@ -160,7 +160,7 @@ export function Navbar() {
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-slate-100 dark:bg-[#0F294A] border border-slate-200 dark:border-[#1E4473] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#163A66] transition-colors shrink-0 cursor-pointer"
+            className="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-100 dark:bg-[#0F294A] border border-slate-200 dark:border-[#1E4473] text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-[#163A66] transition-colors shrink-0 cursor-pointer"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4 text-[#EAB308]" /> : <Moon className="w-4 h-4 text-[#0B1F3A]" />}
           </button>
@@ -178,7 +178,7 @@ export function Navbar() {
             onClick={() => setMobileOpen((prev) => !prev)}
             aria-label={t.nav.menu}
             aria-expanded={mobileOpen}
-            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-[#1E4473] text-[#0B1F3A] dark:text-white hover:bg-slate-50 dark:hover:bg-[#163A66]"
+            className="portal-menu-btn lg:hidden inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-slate-300 dark:border-[#244B7A] bg-white dark:bg-[#0F294A] text-[#0B1F3A] dark:text-white hover:bg-slate-50 dark:hover:bg-[#163A66] shrink-0"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
