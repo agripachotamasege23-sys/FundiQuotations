@@ -23,9 +23,6 @@ export function Footer() {
             <p className="mt-4 text-sm text-slate-300 leading-relaxed max-w-xs">
               {t.footer.tagline}
             </p>
-            <p className="mt-4 text-xs text-slate-400">
-              {t.footer.customerChannelNote}
-            </p>
             <PWAInstallButton />
           </div>
 

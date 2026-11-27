@@ -353,9 +353,9 @@ export const DEFAULT_FAQS: FaqItem[] = [
     questionEn: 'Where do I download the official FundiQuotations Android app?',
     questionSw: 'Ninapakua wapi programu rasmi ya Android ya FundiQuotations?',
     answerEn:
-      'Always download the Customer APK from the Download page of this official FundiQuotations Web Portal. We publish version numbers, file sizes, and SHA-256 checksums so you can verify authenticity.',
+      'Always download the Customer APK from the Download page of this official FundiQuotations Web Portal, where we publish the latest version number, release date, and file size.',
     answerSw:
-      'Pakua Customer APK rasmi kupitia ukurasa wa Pakua (Download) kwenye tovuti hii ya FundiQuotations pekee. Tunaweka namba ya toleo, ukubwa wa faili, na SHA-256 ili uthibitishe usalama wake.',
+      'Pakua Customer APK rasmi kupitia ukurasa wa Pakua (Download) kwenye tovuti hii ya FundiQuotations pekee, ambapo tunaweka namba ya toleo, tarehe ya kutolewa, na ukubwa wa faili.',
     status: 'published'
   },
   {

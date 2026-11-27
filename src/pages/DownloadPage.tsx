@@ -4,10 +4,8 @@ import {
   AlertCircle,
   BookOpen,
   Check,
-  Copy,
   Download,
   FileArchive,
-  ShieldCheck,
   Smartphone
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -19,19 +17,8 @@ export function DownloadPage() {
   const { lang, t } = useLanguage();
   const { latestVersion, publishedVersions, settings, loading, error, refreshPublicData } =
     usePortalData();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadFeedback, setDownloadFeedback] = useState<string | null>(null);
-
-  const handleCopyChecksum = async (version: AppVersion) => {
-    try {
-      await navigator.clipboard.writeText(version.sha256Checksum);
-      setCopiedId(version.id);
-      setTimeout(() => setCopiedId(null), 2200);
-    } catch {
-      // Clipboard API fallback ignored
-    }
-  };
 
   const handleDownloadApk = async (version: AppVersion) => {
     if (
@@ -65,8 +52,7 @@ export function DownloadPage() {
     <div className="bg-[#F4F6F9] min-h-[calc(100vh-8rem)]">
       <section className="bg-[#0B1F3A] text-white py-14 border-b border-[#163A66]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-medium text-[#EAB308]">{t.download.channelNotice}</p>
-          <h1 className="mt-2 font-display text-3xl sm:text-4xl font-bold tracking-tight text-balance">
+          <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-balance">
             {t.download.pageTitle}
           </h1>
           <p className="mt-3 text-base text-slate-300 leading-relaxed max-w-2xl">
@@ -229,35 +215,6 @@ export function DownloadPage() {
                 </div>
               </div>
 
-              {/* SHA-256 Checksum */}
-              <div className="mt-6 p-4 bg-[#F4F6F9] border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="text-xs font-semibold text-slate-500">
-                    {t.download.checksumLabel}
-                  </div>
-                  <div className="mt-1 font-mono text-xs sm:text-sm text-[#0B1F3A] break-all select-all">
-                    {latestVersion.sha256Checksum}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void handleCopyChecksum(latestVersion)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-[#0B1F3A] bg-white border border-slate-300 hover:border-[#0B1F3A] rounded-lg transition-colors whitespace-nowrap shrink-0"
-                >
-                  {copiedId === latestVersion.id ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>{t.download.copiedChecksum}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>{t.download.copyChecksum}</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
               {/* Description & Release Notes */}
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
                 <div>
@@ -276,19 +233,6 @@ export function DownloadPage() {
                     {lang === 'sw' ? latestVersion.releaseNotesSw : latestVersion.releaseNotesEn}
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Security Notice */}
-            <div className="bg-white border border-slate-200 rounded-xl p-6 flex items-start gap-4">
-              <ShieldCheck className="w-6 h-6 text-[#0B1F3A] shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-display text-base font-bold text-[#0B1F3A]">
-                  {t.download.securityVerificationTitle}
-                </h3>
-                <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                  {t.download.securityVerificationBody}
-                </p>
               </div>
             </div>
 

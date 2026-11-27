@@ -23,7 +23,7 @@ const ROUTE_META: Record<Language, Record<string, RouteMetaEntry>> = {
     '/download': {
       title: 'Download Customer APK – FundiQuotations',
       description:
-        'Download the official verified FundiQuotations Customer APK for Android with SHA-256 checksum verification.'
+        'Download the official FundiQuotations Customer APK for Android directly to your device.'
     },
     '/install-guide': {
       title: 'Android Installation Guide – FundiQuotations',
@@ -84,7 +84,7 @@ const ROUTE_META: Record<Language, Record<string, RouteMetaEntry>> = {
     '/download': {
       title: 'Pakua Customer APK – FundiQuotations',
       description:
-        'Pakua Customer APK rasmi ya FundiQuotations ya Android ikiwa na uhakiki wa SHA-256 checksum.'
+        'Pakua Customer APK rasmi ya FundiQuotations ya Android moja kwa moja kwenye simu yako.'
     },
     '/install-guide': {
       title: 'Mwongozo wa Usakinishaji wa Android – FundiQuotations',

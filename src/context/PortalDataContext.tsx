@@ -143,7 +143,19 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
       setTutorials(fetchedTutorials.length > 0 ? fetchedTutorials : DEFAULT_TUTORIALS);
 
       const fetchedFaqs = faqsSnap.docs
-        .map((d) => ({ id: d.id, ...(d.data() as Omit<FaqItem, 'id'>) }))
+        .map((d) => {
+          const data = d.data() as Omit<FaqItem, 'id'>;
+          const isLegacyFaq1 =
+            d.id === 'faq-1' &&
+            (/sha-?256|verify authenticity/i.test(data.answerEn ?? '') ||
+              /sha-?256/i.test(data.answerSw ?? ''));
+          return {
+            id: d.id,
+            ...data,
+            answerEn: isLegacyFaq1 ? DEFAULT_FAQS[0].answerEn : data.answerEn,
+            answerSw: isLegacyFaq1 ? DEFAULT_FAQS[0].answerSw : data.answerSw
+          };
+        })
         .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
       setFaqs(fetchedFaqs.length > 0 ? fetchedFaqs : DEFAULT_FAQS);
 

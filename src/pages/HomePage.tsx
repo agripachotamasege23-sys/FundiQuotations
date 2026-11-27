@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   Check,
@@ -16,6 +16,7 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import { usePortalData } from '../context/PortalDataContext';
 import { APP_SCREENSHOT_PATHS, DEFAULT_SCREENSHOTS } from '../data/defaultContent';
+import { isSafePublicUrl, recordApkDownload } from '../lib/apkUtils';
 import { AppScreenshot } from '../types/portal';
 import { PhoneMockup } from '../components/PhoneMockup';
 import { ResilientImage } from '../components/ResilientImage';
@@ -23,8 +24,61 @@ import { ResilientImage } from '../components/ResilientImage';
 export function HomePage() {
   const { lang, t } = useLanguage();
   const { latestVersion, screenshots, faqs, settings } = usePortalData();
+  const navigate = useNavigate();
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   const [activePreview, setActivePreview] = useState<AppScreenshot | null>(null);
+  const [showStickyDownload, setShowStickyDownload] = useState(false);
+  const [downloadingApk, setDownloadingApk] = useState(false);
+  const [downloadToast, setDownloadToast] = useState<string | null>(null);
+  const heroCtaRef = useRef<HTMLDivElement>(null);
+
+  const canDirectDownload = Boolean(
+    latestVersion &&
+      latestVersion.apkChannel === 'customer' &&
+      latestVersion.status === 'published' &&
+      isSafePublicUrl(latestVersion.apkDownloadUrl)
+  );
+
+  const handleDirectDownload = () => {
+    if (!latestVersion || !canDirectDownload) {
+      navigate('/download');
+      return;
+    }
+
+    setDownloadingApk(true);
+    setDownloadToast(t.download.downloadStartedToast);
+
+    // Trigger file download synchronously inside the user tap gesture
+    const anchor = document.createElement('a');
+    anchor.href = latestVersion.apkDownloadUrl;
+    anchor.download = `FundiQuotations-Customer-v${latestVersion.versionName}.apk`;
+    anchor.rel = 'noopener noreferrer';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    void recordApkDownload(latestVersion, 'home', lang);
+
+    window.setTimeout(() => setDownloadingApk(false), 1200);
+    window.setTimeout(() => setDownloadToast(null), 5000);
+  };
+
+  useEffect(() => {
+    const el = heroCtaRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Show sticky bottom bar only once user scrolls past the Hero Download button
+        const scrolledPast = !entry.isIntersecting && entry.boundingClientRect.top < 80;
+        setShowStickyDownload(scrolledPast);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const heroHeadline =
     (lang === 'sw' ? settings.heroHeadlineSw : settings.heroHeadlineEn) ||
@@ -125,19 +179,28 @@ export function HomePage() {
                 {heroSubheadline}
               </p>
 
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Link
-                  to="/download"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] rounded-lg transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B1F3A]"
+              <div ref={heroCtaRef} className="mt-8 flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  disabled={downloadingApk}
+                  onClick={handleDirectDownload}
+                  className="w-full sm:w-auto min-w-[260px] inline-flex items-center justify-between gap-4 pl-6 pr-2.5 py-3 text-base font-bold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-70 rounded-full shadow-md shadow-[#EAB308]/25 transition-all cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B1F3A]"
                 >
-                  <Download className="w-4 h-4 shrink-0" />
-                  <span>{t.hero.primaryCta}</span>
-                  {latestVersion && (
-                    <span className="font-mono text-xs opacity-80 tabular-nums">
-                      v{latestVersion.versionName}
+                  <span className="inline-flex items-center gap-2.5">
+                    <Download className="w-5 h-5 shrink-0" />
+                    <span>
+                      {downloadingApk ? t.download.downloadingBtn : t.hero.primaryCta}
                     </span>
-                  )}
-                </Link>
+                    {latestVersion && !downloadingApk && (
+                      <span className="font-mono text-xs font-semibold opacity-80 tabular-nums">
+                        v{latestVersion.versionName}
+                      </span>
+                    )}
+                  </span>
+                  <span className="w-9 h-9 rounded-full bg-[#0B1F3A] text-white flex items-center justify-center shrink-0">
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </button>
 
                 <a
                   href="#how-it-works"
@@ -603,13 +666,15 @@ export function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 shrink-0">
-              <Link
-                to="/download"
-                className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] rounded-lg transition-colors whitespace-nowrap"
+              <button
+                type="button"
+                disabled={downloadingApk}
+                onClick={handleDirectDownload}
+                className="inline-flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-[#0B1F3A] bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-70 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
               >
                 <Download className="w-4 h-4" />
-                <span>{t.nav.downloadApk}</span>
-              </Link>
+                <span>{downloadingApk ? t.download.downloadingBtn : t.nav.downloadApk}</span>
+              </button>
               <Link
                 to="/install-guide"
                 className="inline-flex items-center gap-2 px-5 py-3.5 text-sm font-semibold text-[#0B1F3A] border border-slate-300 hover:border-[#0B1F3A] rounded-lg transition-colors whitespace-nowrap"
@@ -672,6 +737,60 @@ export function HomePage() {
             <div className="p-5 text-sm text-slate-600 leading-relaxed">
               {lang === 'sw' ? activePreview.captionSw : activePreview.captionEn}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Download Started Feedback Toast */}
+      {downloadToast && (
+        <div
+          role="status"
+          className={`fixed left-1/2 -translate-x-1/2 z-40 px-4 w-full max-w-md ${
+            showStickyDownload && !activePreview ? 'bottom-20' : 'bottom-5'
+          }`}
+        >
+          <div className="bg-[#0B1F3A] text-white border border-[#163A66] rounded-xl px-4 py-3 shadow-xl flex items-center justify-between gap-3 text-xs sm:text-sm">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Check className="w-4 h-4 text-[#EAB308] shrink-0" />
+              <span>{downloadToast}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDownloadToast(null)}
+              aria-label="Close notification"
+              className="p-1 rounded-md text-slate-300 hover:text-white hover:bg-[#163A66] shrink-0"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Bottom Floating Download Bar on Scroll */}
+      {showStickyDownload && !activePreview && (
+        <div className="fixed bottom-4 left-0 right-0 z-30 px-4 pointer-events-none">
+          <div className="max-w-md mx-auto pointer-events-auto">
+            <button
+              type="button"
+              disabled={downloadingApk}
+              onClick={handleDirectDownload}
+              className="w-full flex items-center justify-between gap-3 pl-6 pr-2.5 py-2.5 rounded-full bg-[#EAB308] hover:bg-[#D99B16] disabled:opacity-70 text-[#0B1F3A] shadow-[0_14px_34px_-6px_rgba(11,31,58,0.45)] ring-1 ring-[#0B1F3A]/15 transition-all cursor-pointer"
+            >
+              <span className="w-8 h-8 rounded-full bg-[#0B1F3A]/10 flex items-center justify-center shrink-0">
+                <Download className="w-4 h-4 text-[#0B1F3A]" />
+              </span>
+              <span className="font-display text-base font-bold tracking-tight text-center">
+                {downloadingApk ? t.download.downloadingBtn : t.hero.primaryCta}
+                {latestVersion && !downloadingApk && (
+                  <span className="ml-2 font-mono text-xs font-semibold opacity-80 tabular-nums">
+                    v{latestVersion.versionName}
+                  </span>
+                )}
+              </span>
+              <span className="w-9 h-9 rounded-full bg-[#0B1F3A] text-white flex items-center justify-center shrink-0">
+                <ArrowRight className="w-4 h-4" />
+              </span>
+            </button>
           </div>
         </div>
       )}

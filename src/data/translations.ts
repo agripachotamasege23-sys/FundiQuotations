@@ -63,15 +63,11 @@ export interface TranslationDictionary {
   download: {
     pageTitle: string;
     pageSubtitle: string;
-    channelNotice: string;
     appNameLabel: string;
     versionLabel: string;
     sizeLabel: string;
     releaseDateLabel: string;
     minAndroidLabel: string;
-    checksumLabel: string;
-    copyChecksum: string;
-    copiedChecksum: string;
     descriptionLabel: string;
     releaseNotesLabel: string;
     downloadBtn: string;
@@ -81,8 +77,6 @@ export interface TranslationDictionary {
     noApkBody: string;
     noApkAction: string;
     previousVersionsTitle: string;
-    securityVerificationTitle: string;
-    securityVerificationBody: string;
     downloadStartedToast: string;
   };
   installGuide: {
@@ -174,7 +168,6 @@ export interface TranslationDictionary {
     companyHeading: string;
     contactHeading: string;
     rights: string;
-    customerChannelNote: string;
   };
   common: {
     loading: string;
@@ -390,18 +383,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     },
     download: {
       pageTitle: 'Download FundiQuotations for Android',
-      pageSubtitle:
-        'Retrieve the verified Customer APK directly from our secure release server. Check the SHA-256 checksum before installing.',
-      channelNotice:
-        'Official Customer APK Channel Only · Verified release metadata & cryptographic SHA-256 verification',
+      pageSubtitle: 'Download the official FundiQuotations Customer APK directly for your Android device.',
       appNameLabel: 'Application Name',
       versionLabel: 'Latest Version',
       sizeLabel: 'APK File Size',
       releaseDateLabel: 'Release Date',
       minAndroidLabel: 'Minimum Android',
-      checksumLabel: 'SHA-256 Checksum',
-      copyChecksum: 'Copy SHA-256',
-      copiedChecksum: 'Copied',
       descriptionLabel: 'Package Summary',
       releaseNotesLabel: 'Release Notes',
       downloadBtn: 'Download Customer APK',
@@ -412,9 +399,6 @@ export const translations: Record<Language, TranslationDictionary> = {
         'Our engineering team has not published a public Customer APK release in this portal yet. Please check back shortly or contact support for release timing.',
       noApkAction: 'Contact Support',
       previousVersionsTitle: 'Previous Published Customer Releases',
-      securityVerificationTitle: 'Safe & Verified Customer Release',
-      securityVerificationBody:
-        'Only the official Customer APK is distributed publicly through this portal. Compare the downloaded file’s SHA-256 hash against the checksum shown above to confirm file integrity.',
       downloadStartedToast: 'Your Customer APK download has started. Open your Downloads folder once complete.'
     },
     installGuide: {
@@ -515,7 +499,7 @@ export const translations: Record<Language, TranslationDictionary> = {
         },
         {
           title: 'Transparent APK Distribution',
-          body: 'Every public Customer APK release includes version history, minimum Android requirements, and a verifiable SHA-256 checksum.'
+          body: 'Every Customer APK release includes version history, release dates, file sizes, and minimum Android requirements.'
         },
         {
           title: 'Bilingual Accessibility',
@@ -555,7 +539,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       sections: [
         {
           heading: '1. Permitted Use of the Customer APK',
-          body: 'FundiQuotations grants you a non-exclusive license to install and use the official Customer APK on your Android devices for managing legitimate business quotations, invoices, customers, and materials. You must only download installation packages from official FundiQuotations channels and verify SHA-256 checksums where provided.'
+          body: 'FundiQuotations grants you a non-exclusive license to install and use the official Customer APK on your Android devices for managing legitimate business quotations, invoices, customers, and materials. You must only download installation packages from official FundiQuotations channels.'
         },
         {
           heading: '2. Accuracy of Quotations & Financial Records',
@@ -578,8 +562,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       resourcesHeading: 'Guides & Help',
       companyHeading: 'Company & Legal',
       contactHeading: 'Contact',
-      rights: 'All rights reserved.',
-      customerChannelNote: 'Public distribution is strictly limited to verified Customer APK releases.'
+      rights: 'All rights reserved.'
     },
     common: {
       loading: 'Loading portal content...',
@@ -793,18 +776,12 @@ export const translations: Record<Language, TranslationDictionary> = {
     },
     download: {
       pageTitle: 'Pakua FundiQuotations ya Android',
-      pageSubtitle:
-        'Pata Customer APK rasmi moja kwa moja kutoka kwenye seva yetu salama. Hakikisha SHA-256 checksum kabla ya kusakinisha.',
-      channelNotice:
-        'Kituo Rasmi cha Customer APK Pekee · Maelezo ya toleo na uhakiki wa SHA-256',
+      pageSubtitle: 'Pakua Customer APK rasmi ya FundiQuotations moja kwa moja kwa simu yako ya Android.',
       appNameLabel: 'Jina la Programu',
       versionLabel: 'Toleo Jipya Zaidi',
       sizeLabel: 'Ukubwa wa Faili la APK',
       releaseDateLabel: 'Tarehe ya Kutolewa',
       minAndroidLabel: 'Toleo la Chini la Android',
-      checksumLabel: 'SHA-256 Checksum',
-      copyChecksum: 'Nakili SHA-256',
-      copiedChecksum: 'Imenakiliwa',
       descriptionLabel: 'Maelezo ya Toleo',
       releaseNotesLabel: 'Mabadiliko katika Toleo Hili',
       downloadBtn: 'Pakua Customer APK',
@@ -815,9 +792,6 @@ export const translations: Record<Language, TranslationDictionary> = {
         'Timu yetu bado haijachapisha toleo la umma la Customer APK katika tovuti hii. Tafadhali rudi tena hivi karibuni au wasiliana na kitengo cha msaada.',
       noApkAction: 'Wasiliana na Msaada',
       previousVersionsTitle: 'Matoleo ya Awali ya Customer APK',
-      securityVerificationTitle: 'Toleo Salama na Lililothibitishwa',
-      securityVerificationBody:
-        'Tovuti hii hutoa Customer APK rasmi pekee kwa umma. Linganisha SHA-256 ya faili ulilopakua na namba iliyo hapo juu kuthibitisha usalama wake.',
       downloadStartedToast: 'Upakuaji wa Customer APK umeanza. Fungua folda ya Downloads ukikamilika.'
     },
     installGuide: {
@@ -918,7 +892,7 @@ export const translations: Record<Language, TranslationDictionary> = {
         },
         {
           title: 'Usambazaji Wazi wa APK',
-          body: 'Kila toleo la Customer APK linajumuisha historia ya toleo, mahitaji ya Android, na namba ya uhakiki wa SHA-256.'
+          body: 'Kila toleo la Customer APK linajumuisha historia ya toleo, tarehe ya kutolewa, ukubwa wa faili, na mahitaji ya Android.'
         },
         {
           title: 'Upatikanaji kwa Lugha Mbili',
@@ -958,7 +932,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       sections: [
         {
           heading: '1. Matumizi Yanayoruhusiwa ya Customer APK',
-          body: 'FundiQuotations inakupa leseni isiyo ya kipekee ya kusakinisha na kutumia Customer APK rasmi kwenye simu zako za Android kwa ajili ya kusimamia nukuu, ankara, wateja, na vifaa vya biashara halali. Pakua kutoka vyanzo rasmi pekee na uhakiki SHA-256.'
+          body: 'FundiQuotations inakupa leseni isiyo ya kipekee ya kusakinisha na kutumia Customer APK rasmi kwenye simu zako za Android kwa ajili ya kusimamia nukuu, ankara, wateja, na vifaa vya biashara halali. Pakua kutoka vyanzo rasmi pekee.'
         },
         {
           heading: '2. Usahihi wa Nukuu na Kumbukumbu za Kifedha',
@@ -981,8 +955,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       resourcesHeading: 'Miongozo & Msaada',
       companyHeading: 'Kampuni & Sheria',
       contactHeading: 'Mawasiliano',
-      rights: 'Haki zote zimehifadhiwa.',
-      customerChannelNote: 'Usambazaji wa umma ni kwa matoleo rasmi ya Customer APK pekee.'
+      rights: 'Haki zote zimehifadhiwa.'
     },
     common: {
       loading: 'Inapakia taarifa za tovuti...',
